@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoアプリ テスト仕様書</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            color: #334155;
+            background: #ffffff;
+            font-family: sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 20px;
+        }
+
+        .print-button {
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 6px 12px;
+            background: #334155;
+            color: #ffffff;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        col.number {
+            width: 5%;
+        }
+
+        col.check {
+            width: 20%;
+        }
+
+        col.value {
+            width: 15%;
+        }
+
+        col.expected {
+            width: 25%;
+        }
+
+        col.result {
+            width: 10%;
+        }
+
+        col.note {
+            width: 25%;
+        }
+
+        th,
+        td {
+            border: 1px solid #94a3b8;
+            padding: 5px 6px;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-align: left;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 34px;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            padding: 4px;
+            color: #334155;
+            font: inherit;
+            line-height: 1.4;
+            overflow: hidden;
+            resize: vertical;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10px;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            textarea {
+                overflow: visible;
+                resize: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>ToDoアプリ テスト仕様書</h1>
+        <button class="print-button" type="button" onclick="window.print()">PDFで保存</button>
+    </div>
+
+    <table>
+        <colgroup>
+            <col class="number">
+            <col class="check">
+            <col class="value">
+            <col class="expected">
+            <col class="result">
+            <col class="note">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>番号</th>
+                <th>確かめること</th>
+                <th>入れる値</th>
+                <th>期待する結果</th>
+                <th>結果</th>
+                <th>備考/NG</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>一覧機能：一覧画面を開く</td>
+                <td>http://localhost:8080/todos</td>
+                <td>登録済みの5件が1画面の一覧に表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-1" value="OK">OK</label><label><input type="radio" name="result-1" value="NG">NG</label></div></td>
+                <td><textarea aria-label="1番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>登録画面を開く</td>
+                <td>一覧の「新規登録」</td>
+                <td>登録画面が表示され、やること・メモ・ジャンル・優先度・期限の入力欄が表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-2" value="OK">OK</label><label><input type="radio" name="result-2" value="NG">NG</label></div></td>
+                <td><textarea aria-label="2番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>登録画面の必須欄が空のときの入力チェック</td>
+                <td>やること・ジャンル・優先度を空のまま「確認する」</td>
+                <td>登録画面に留まり、各欄の下に指定された入力エラー文が表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-3" value="OK">OK</label><label><input type="radio" name="result-3" value="NG">NG</label></div></td>
+                <td><textarea aria-label="3番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>やることの文字数チェック</td>
+                <td>やることに256文字以上を入力して「確認する」</td>
+                <td>登録画面に留まり、やること欄の下に「やることは255文字以内で入力してください」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-4" value="OK">OK</label><label><input type="radio" name="result-4" value="NG">NG</label></div></td>
+                <td><textarea aria-label="4番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>メモの文字数チェック</td>
+                <td>メモに256文字以上を入力して「確認する」</td>
+                <td>登録画面に留まり、メモ欄の下に「メモは255文字以内で入力してください」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-5" value="OK">OK</label><label><input type="radio" name="result-5" value="NG">NG</label></div></td>
+                <td><textarea aria-label="5番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>ジャンルの未選択チェック</td>
+                <td>ジャンルを選ばず、他の必須欄を入れて「確認する」</td>
+                <td>登録画面に留まり、ジャンル欄の下に「ジャンルを選んでください」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-6" value="OK">OK</label><label><input type="radio" name="result-6" value="NG">NG</label></div></td>
+                <td><textarea aria-label="6番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>優先度の未選択チェック</td>
+                <td>優先度を選ばず、他の必須欄を入れて「確認する」</td>
+                <td>登録画面に留まり、優先度欄の下に「優先度を選んでください」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-7" value="OK">OK</label><label><input type="radio" name="result-7" value="NG">NG</label></div></td>
+                <td><textarea aria-label="7番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>登録確認画面を開く</td>
+                <td>やること「テスト登録」、メモ「確認用メモ」、ジャンル「デザイン」、優先度「高」、期限「2026-12-01」</td>
+                <td>登録確認画面に5つの値が入力欄ではなく文字で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-8" value="OK">OK</label><label><input type="radio" name="result-8" value="NG">NG</label></div></td>
+                <td><textarea aria-label="8番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>登録確認画面の空欄表示</td>
+                <td>メモと期限を空にして「確認する」</td>
+                <td>登録確認画面でメモと期限が「（入力なし）」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-9" value="OK">OK</label><label><input type="radio" name="result-9" value="NG">NG</label></div></td>
+                <td><textarea aria-label="9番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>登録確認画面から登録画面へ戻る</td>
+                <td>登録確認画面の「書き直す」</td>
+                <td>登録画面に戻り、入力した値が入った状態で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-10" value="OK">OK</label><label><input type="radio" name="result-10" value="NG">NG</label></div></td>
+                <td><textarea aria-label="10番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>登録機能</td>
+                <td>テスト登録の入力値で「登録する」</td>
+                <td>一覧画面に戻り、登録した「テスト登録」が表示され、上部に「登録しました」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-11" value="OK">OK</label><label><input type="radio" name="result-11" value="NG">NG</label></div></td>
+                <td><textarea aria-label="11番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>編集画面を開く</td>
+                <td>登録した「テスト登録」の「編集」</td>
+                <td>編集画面が開き、やること・メモ・ジャンル・優先度・期限・完了の現在値が入力欄に入る。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-12" value="OK">OK</label><label><input type="radio" name="result-12" value="NG">NG</label></div></td>
+                <td><textarea aria-label="12番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>編集画面の必須欄が空のときの入力チェック</td>
+                <td>やること・ジャンル・優先度を空にして「確認する」</td>
+                <td>編集画面に留まり、空にした各欄の下に指定された入力エラー文が表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-13" value="OK">OK</label><label><input type="radio" name="result-13" value="NG">NG</label></div></td>
+                <td><textarea aria-label="13番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>編集確認画面を開く</td>
+                <td>やることを「テスト登録（編集後）」に変えて「確認する」</td>
+                <td>編集確認画面に6つの値が入力欄ではなく文字で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-14" value="OK">OK</label><label><input type="radio" name="result-14" value="NG">NG</label></div></td>
+                <td><textarea aria-label="14番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>編集確認画面から編集画面へ戻る</td>
+                <td>編集確認画面の「書き直す」</td>
+                <td>編集画面に戻り、変更した値が入った状態で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-15" value="OK">OK</label><label><input type="radio" name="result-15" value="NG">NG</label></div></td>
+                <td><textarea aria-label="15番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>編集保存機能</td>
+                <td>編集確認画面の「保存する」</td>
+                <td>一覧画面に戻り、変更後の値が表示され、上部に「保存しました」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-16" value="OK">OK</label><label><input type="radio" name="result-16" value="NG">NG</label></div></td>
+                <td><textarea aria-label="16番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>17</td>
+                <td>削除確認画面を開く</td>
+                <td>変更後のテスト行の「削除」</td>
+                <td>削除確認画面に、やること・ジャンル・期限が入力欄ではなく文字で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-17" value="OK">OK</label><label><input type="radio" name="result-17" value="NG">NG</label></div></td>
+                <td><textarea aria-label="17番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>18</td>
+                <td>削除確認をやめる</td>
+                <td>削除確認画面の「やめる」</td>
+                <td>データを削除せず、一覧画面に戻る。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-18" value="OK">OK</label><label><input type="radio" name="result-18" value="NG">NG</label></div></td>
+                <td><textarea aria-label="18番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>19</td>
+                <td>名前で検索する</td>
+                <td>名前欄に「ポートフォリオ」を入れて「絞り込む」</td>
+                <td>titleに「ポートフォリオ」を一部でも含む行だけが一覧に表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-19" value="OK">OK</label><label><input type="radio" name="result-19" value="NG">NG</label></div></td>
+                <td><textarea aria-label="19番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>ジャンルで検索する</td>
+                <td>ジャンルに「デザイン」を選んで「絞り込む」</td>
+                <td>categoryが「デザイン」と完全一致する行だけが一覧に表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-20" value="OK">OK</label><label><input type="radio" name="result-20" value="NG">NG</label></div></td>
+                <td><textarea aria-label="20番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>21</td>
+                <td>検索条件を指定しない</td>
+                <td>名前欄を空にし、ジャンルを「すべて」にして「絞り込む」</td>
+                <td>絞り込みをせず、todosの5行が一覧に表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-21" value="OK">OK</label><label><input type="radio" name="result-21" value="NG">NG</label></div></td>
+                <td><textarea aria-label="21番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>22</td>
+                <td>検索結果が0件のとき</td>
+                <td>名前欄に「存在しない言葉」を入れて「絞り込む」</td>
+                <td>表の代わりに「まだ1件も登録されていません」と表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-22" value="OK">OK</label><label><input type="radio" name="result-22" value="NG">NG</label></div></td>
+                <td><textarea aria-label="22番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>23</td>
+                <td>期限が近い順に並び替える</td>
+                <td>名前欄を空にし、ジャンルを「すべて」にして「期限が近い順」を押す</td>
+                <td>一覧がdue_dateの昇順で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-23" value="OK">OK</label><label><input type="radio" name="result-23" value="NG">NG</label></div></td>
+                <td><textarea aria-label="23番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>24</td>
+                <td>期限が遠い順に並び替える</td>
+                <td>「期限が遠い順」を押す</td>
+                <td>一覧がdue_dateの降順で表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-24" value="OK">OK</label><label><input type="radio" name="result-24" value="NG">NG</label></div></td>
+                <td><textarea aria-label="24番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td>検索条件を残したまま並び替える</td>
+                <td>名前欄とジャンルを指定してから「期限が遠い順」を押す</td>
+                <td>指定した名前とジャンルの条件を保ったまま、期限が遠い順に表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-25" value="OK">OK</label><label><input type="radio" name="result-25" value="NG">NG</label></div></td>
+                <td><textarea aria-label="25番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>26</td>
+                <td>並び順を残したまま絞り込む</td>
+                <td>「期限が遠い順」を選んでから名前またはジャンルで「絞り込む」</td>
+                <td>選んだ検索条件を反映し、期限が遠い順のまま表示される。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-26" value="OK">OK</label><label><input type="radio" name="result-26" value="NG">NG</label></div></td>
+                <td><textarea aria-label="26番の備考"></textarea></td>
+            </tr>
+            <tr>
+                <td>27</td>
+                <td>テストで増やした行を消して5行へ戻す</td>
+                <td>名前欄を空にし、ジャンルを「すべて」にして、テスト登録した行の「削除」から「消す」</td>
+                <td>一覧に元の5行が表示され、削除したテスト行が表示されない。</td>
+                <td><div class="radio-group"><label><input type="radio" name="result-27" value="OK">OK</label><label><input type="radio" name="result-27" value="NG">NG</label></div></td>
+                <td><textarea aria-label="27番の備考"></textarea></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function resizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        document.querySelectorAll('textarea').forEach(function (textarea) {
+            textarea.addEventListener('input', function () {
+                resizeTextarea(textarea);
+            });
+            resizeTextarea(textarea);
+        });
+
+        window.addEventListener('beforeprint', function () {
+            document.querySelectorAll('textarea').forEach(resizeTextarea);
+        });
+    </script>
+</body>
+</html>
