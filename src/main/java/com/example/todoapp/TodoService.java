@@ -25,19 +25,19 @@ public class TodoService {
 
     public int create(Todo todo) {
         int result = todoMapper.insert(todo);
-        log.info("Todo registration completed");
+        log.info("Todo registration completed: id={}", todo.getId());
         return result;
     }
 
     public int update(Todo todo) {
         int result = todoMapper.update(todo);
-        log.info("Todo update completed");
+        log.info("Todo update completed: id={}", todo.getId());
         return result;
     }
 
     public int delete(Long id) {
         int result = todoMapper.deleteById(id);
-        log.info("Todo deletion completed");
+        log.info("Todo deletion completed: id={}", id);
         return result;
     }
 }
