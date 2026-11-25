@@ -120,8 +120,15 @@ body {
 
 .calendar-nav {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.calendar-nav__left,
+.calendar-nav__right {
+    display: flex;
+    gap: 12px;
 }
 
 .calendar-table {
@@ -177,4 +184,13 @@ body {
 
 .calendar-todo--overdue {
     color: #dc2626;
+}
+
+.calendar-todo-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.calendar-todo-link:hover {
+    text-decoration: underline;
 }

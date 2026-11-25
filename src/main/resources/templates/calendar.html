@@ -11,8 +11,14 @@
         <h1 class="page-title" th:text="|${year}年${month}月|">2026年4月</h1>
 
         <nav class="calendar-nav" aria-label="月の移動">
-            <a class="btn sub" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue})}">前の月</a>
-            <a class="btn sub" th:href="@{/calendar(year=${next.year},month=${next.monthValue})}">次の月</a>
+            <div class="calendar-nav__left">
+                <a class="btn sub" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue})}">前の月</a>
+                <a class="btn sub" th:href="@{/calendar(year=${next.year},month=${next.monthValue})}">次の月</a>
+            </div>
+            <div class="calendar-nav__right">
+                <a class="btn sub" href="/todos">表で見る</a>
+                <a class="btn" href="/todos/new">新規登録</a>
+            </div>
         </nav>
 
         <table class="calendar-table" th:attr="data-from=${from},data-to=${to}">
@@ -80,10 +86,14 @@
                     .slice(0, 3)
                     .forEach((todo) => {
                         const title = document.createElement('div');
-                        title.textContent = todo.title;
+                        const link = document.createElement('a');
+                        link.className = 'calendar-todo-link';
+                        link.href = `/todos/${todo.id}/edit`;
+                        link.textContent = todo.title;
                         if (todo.dueDate < today && !todo.completed) {
-                            title.classList.add('calendar-todo--overdue');
+                            link.classList.add('calendar-todo--overdue');
                         }
+                        title.appendChild(link);
                         cell.appendChild(title);
                     });
 
