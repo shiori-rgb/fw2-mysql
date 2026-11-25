@@ -47,9 +47,31 @@
             const to = calendar.dataset.to;
             const res = await fetch(`/api/todos?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
             const todos = await res.json();
+            const holidayRes = await fetch(`/api/holidays?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+            const holidays = await holidayRes.json();
+
+            if (holidayRes.headers.get('X-Holidays-Unavailable') === 'true') {
+                const message = document.createElement('p');
+                message.className = 'flash';
+                message.textContent = '祝日を取れませんでした';
+                document.querySelector('.calendar-page').prepend(message);
+            }
 
             document.querySelectorAll('[data-date]').forEach((cell) => {
                 const date = cell.dataset.date;
+                const dayOfWeek = new Date(`${date}T00:00:00`).getDay();
+
+                if (dayOfWeek === 0) {
+                    cell.classList.add('calendar-cell--sunday');
+                } else if (dayOfWeek === 6) {
+                    cell.classList.add('calendar-cell--saturday');
+                }
+
+                if (Object.prototype.hasOwnProperty.call(holidays, date)) {
+                    cell.classList.add('calendar-cell--holiday');
+                    cell.title = holidays[date];
+                }
+
                 todos
                     .filter((todo) => todo.dueDate === date)
                     .forEach((todo) => {
