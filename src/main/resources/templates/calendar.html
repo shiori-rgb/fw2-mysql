@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|${year}年${month}月|">カレンダー</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container calendar-page">
+        <h1 class="page-title" th:text="|${year}年${month}月|">2026年4月</h1>
+
+        <nav class="calendar-nav" aria-label="月の移動">
+            <a class="btn sub" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue})}">前の月</a>
+            <a class="btn sub" th:href="@{/calendar(year=${next.year},month=${next.monthValue})}">次の月</a>
+        </nav>
+
+        <table class="calendar-table" th:attr="data-from=${from},data-to=${to}">
+            <thead>
+                <tr>
+                    <th class="sunday">日</th>
+                    <th>月</th>
+                    <th>火</th>
+                    <th>水</th>
+                    <th>木</th>
+                    <th>金</th>
+                    <th class="saturday">土</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="week : ${weeks}">
+                    <th:block th:each="cell : ${week}">
+                        <td class="calendar-cell calendar-cell--empty" th:if="${cell == null}"></td>
+                        <td class="calendar-cell" th:unless="${cell == null}"
+                            th:attr="data-date=${cell.date}">
+                            <span class="calendar-day-number" th:text="${cell.day}">1</span>
+                        </td>
+                    </th:block>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
