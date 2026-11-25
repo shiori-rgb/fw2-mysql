@@ -5,22 +5,33 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 public class HolidayClient {
 
-    private static final String HOLIDAY_API_URL = "https://holidays-jp.github.io/api/v1/date.json";
+    private static final String HOLIDAY_API_URL = "https://holidays-jp.github.invalid/api/v1/date.json";
 
-    public Map<String, String> fetch(LocalDate from, LocalDate to) {
-        RestClient restClient = RestClient.create();
-        Map<String, String> holidays = restClient.get()
-                .uri(HOLIDAY_API_URL)
-                .retrieve()
-                .body(new ParameterizedTypeReference<Map<String, String>>() {
-                });
+    public HolidayResult fetch(LocalDate from, LocalDate to) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3000);
+        requestFactory.setReadTimeout(5000);
+
+        RestClient restClient = RestClient.create(requestFactory);
+        Map<String, String> holidays;
+        try {
+            holidays = restClient.get()
+                    .uri(HOLIDAY_API_URL)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, String>>() {
+                    });
+        } catch (RestClientException exception) {
+            return new HolidayResult(Map.of(), true);
+        }
 
         if (from == null && to == null) {
-            return holidays;
+            return new HolidayResult(holidays, false);
         }
 
         Map<String, String> filtered = new LinkedHashMap<>();
@@ -32,6 +43,9 @@ public class HolidayClient {
                 filtered.put(dateText, name);
             }
         });
-        return filtered;
+        return new HolidayResult(filtered, false);
+    }
+
+    public record HolidayResult(Map<String, String> holidays, boolean unavailable) {
     }
 }
