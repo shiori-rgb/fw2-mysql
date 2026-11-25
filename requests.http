@@ -5,7 +5,7 @@ POST http://localhost:8080/api/todos
 Content-Type: application/json
 
 {
-  "title": "",
+  "title": "競合サイトを３つ調べる",
   "category": "マーケティング",
   "priority": 2,
   "dueDate": "2026-04-01"
@@ -29,3 +29,6 @@ Content-Type: application/json
 
 ### 4. 1件削除する
 DELETE http://localhost:8080/api/todos/12
+
+### 5. 祝日を直接取ってくる
+GET https://holidays-jp.github.io/api/v1/date.json
