@@ -167,15 +167,15 @@ body {
 }
 
 .calendar-cell--sunday {
-    background: #fef2f2;
+    background: #fee2e2;
 }
 
 .calendar-cell--saturday {
-    background: #eff6ff;
+    background: #dbeafe;
 }
 
 .calendar-cell--holiday {
-    background: #fef3c7;
+    background: #fef08a;
 }
 
 .calendar-day-number {
