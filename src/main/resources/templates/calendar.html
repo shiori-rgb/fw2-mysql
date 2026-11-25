@@ -40,5 +40,27 @@
             </tbody>
         </table>
     </div>
+    <script>
+        async function loadTodos() {
+            const calendar = document.querySelector('.calendar-table');
+            const from = calendar.dataset.from;
+            const to = calendar.dataset.to;
+            const res = await fetch(`/api/todos?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+            const todos = await res.json();
+
+            document.querySelectorAll('[data-date]').forEach((cell) => {
+                const date = cell.dataset.date;
+                todos
+                    .filter((todo) => todo.dueDate === date)
+                    .forEach((todo) => {
+                        const title = document.createElement('div');
+                        title.textContent = todo.title;
+                        cell.appendChild(title);
+                    });
+            });
+        }
+
+        loadTodos();
+    </script>
 </body>
 </html>
