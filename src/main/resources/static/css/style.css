@@ -174,3 +174,7 @@ body {
 .calendar-day-number {
     font-weight: bold;
 }
+
+.calendar-todo--overdue {
+    color: #dc2626;
+}

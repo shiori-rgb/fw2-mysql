@@ -57,6 +57,9 @@
                 document.querySelector('.calendar-page').prepend(message);
             }
 
+            const now = new Date();
+            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
             document.querySelectorAll('[data-date]').forEach((cell) => {
                 const date = cell.dataset.date;
                 const dayOfWeek = new Date(`${date}T00:00:00`).getDay();
@@ -72,13 +75,23 @@
                     cell.title = holidays[date];
                 }
 
-                todos
-                    .filter((todo) => todo.dueDate === date)
+                const matchingTodos = todos.filter((todo) => todo.dueDate === date);
+                matchingTodos
+                    .slice(0, 3)
                     .forEach((todo) => {
                         const title = document.createElement('div');
                         title.textContent = todo.title;
+                        if (todo.dueDate < today && !todo.completed) {
+                            title.classList.add('calendar-todo--overdue');
+                        }
                         cell.appendChild(title);
                     });
+
+                if (matchingTodos.length > 3) {
+                    const more = document.createElement('div');
+                    more.textContent = `ほか ${matchingTodos.length - 3}件`;
+                    cell.appendChild(more);
+                }
             });
         }
 
