@@ -5,7 +5,7 @@ POST http://localhost:8080/api/todos
 Content-Type: application/json
 
 {
-  "title": "競合サイトを3つ調べる",
+  "title": "",
   "category": "マーケティング",
   "priority": 2,
   "dueDate": "2026-04-01"
