@@ -26,4 +26,4 @@ Content-Type: application/json
 }
 
 ### 4. 1件削除する
-DELETE http://localhost:8080/api/todos/1
+DELETE http://localhost:8080/api/todos/12
