@@ -48,8 +48,27 @@
         const idealLabel = /*[[#{burndown.ideal}]]*/ 'Ideal';
         const actualLabel = /*[[#{burndown.actual}]]*/ 'Actual';
 
-        if (labels.length > 0) {
-            new Chart(document.getElementById('burndownChart'), {
+        let burndownChart;
+
+        function themeColors() {
+            const styles = getComputedStyle(document.documentElement);
+            return {
+                main: styles.getPropertyValue('--theme-main').trim(),
+                text: styles.getPropertyValue('--theme-text').trim(),
+                border: styles.getPropertyValue('--theme-border').trim(),
+                muted: styles.getPropertyValue('--theme-muted').trim()
+            };
+        }
+
+        function drawBurndownChart() {
+            if (labels.length === 0) {
+                return;
+            }
+            const colors = themeColors();
+            if (burndownChart) {
+                burndownChart.destroy();
+            }
+            burndownChart = new Chart(document.getElementById('burndownChart'), {
                 type: 'line',
                 data: {
                     labels,
@@ -57,7 +76,7 @@
                         {
                             label: idealLabel,
                             data: idealValues,
-                            borderColor: '#94a3b8',
+                            borderColor: colors.muted,
                             borderDash: [6, 6],
                             pointRadius: 0,
                             tension: 0
@@ -65,8 +84,8 @@
                         {
                             label: actualLabel,
                             data: actualValues,
-                            borderColor: '#38bdf8',
-                            backgroundColor: '#38bdf8',
+                            borderColor: colors.main,
+                            backgroundColor: colors.main,
                             tension: 0.2
                         }
                     ]
@@ -77,21 +96,25 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            title: { display: true, text: remainingLabel, color: '#e2e8f0' },
-                            ticks: { color: '#cbd5e1', precision: 0 },
-                            grid: { color: '#334155' }
+                            title: { display: true, text: remainingLabel, color: colors.text },
+                            ticks: { color: colors.muted, precision: 0 },
+                            grid: { color: colors.border }
                         },
                         x: {
-                            ticks: { color: '#cbd5e1' },
-                            grid: { color: '#334155' }
+                            ticks: { color: colors.muted },
+                            grid: { color: colors.border }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#e2e8f0' } }
+                        legend: { labels: { color: colors.text } }
                     }
                 }
             });
         }
+
+        drawBurndownChart();
+        document.addEventListener('themechange', drawBurndownChart);
     </script>
+    <script src="/js/theme.js" defer></script>
 </body>
 </html>
