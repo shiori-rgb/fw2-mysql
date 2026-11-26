@@ -21,11 +21,20 @@ public class TodoService {
     }
 
     public List<Todo> search(String keyword, String category, String order, boolean showCompleted) {
-        return todoMapper.search(keyword, category, order, null, null, showCompleted);
+        return search(keyword, category, order, showCompleted, null, null);
+    }
+
+    public List<Todo> search(String keyword, String category, String order, boolean showCompleted,
+            Integer offset, Integer limit) {
+        return todoMapper.search(keyword, category, order, null, null, showCompleted, offset, limit);
+    }
+
+    public int count(String keyword, String category, boolean showCompleted) {
+        return todoMapper.count(keyword, category, showCompleted);
     }
 
     public List<Todo> search(String keyword, String category, String order, LocalDate from, LocalDate to) {
-        return todoMapper.search(keyword, category, order, from, to, true);
+        return todoMapper.search(keyword, category, order, from, to, true, null, null);
     }
 
     public Todo findById(Long id) {

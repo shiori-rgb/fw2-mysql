@@ -23,14 +23,15 @@
                 <option value="就職活動" th:selected="${category == '就職活動'}">就職活動</option>
             </select>
             <input type="hidden" name="order" th:value="${order}">
+            <input type="hidden" name="page" th:value="${page}">
             <input type="hidden" name="showCompleted" value="false" id="showCompletedValue">
             <label>
                 <input type="checkbox" id="showCompletedCheckbox" th:checked="${showCompleted}">
                 完了したものも表示する
             </label>
             <button class="btn" type="submit">絞り込む</button>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted})}">期限が近い順</a>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted})}">期限が遠い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted},page=${page})}">期限が近い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted},page=${page})}">期限が遠い順</a>
         </form>
 
         <script>
@@ -74,6 +75,14 @@
                 </tr>
             </tbody>
         </table>
+        <nav class="pagination" th:if="${totalPages > 1}" aria-label="ページ移動">
+            <span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
+                <span th:if="${pageNumber == page}" th:text="${pageNumber}"></span>
+                <a class="link" th:unless="${pageNumber == page}"
+                   th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber})}"
+                   th:text="${pageNumber}"></a>
+            </span>
+        </nav>
     </div>
     <script>
         const now = new Date();

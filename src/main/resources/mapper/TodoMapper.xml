@@ -32,6 +32,25 @@
                 ORDER BY due_date ASC
             </otherwise>
         </choose>
+        <if test="limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*)
+        FROM todos
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+            <if test="!showCompleted">
+                AND completed = FALSE
+            </if>
+        </where>
     </select>
 
     <select id="findById" resultType="com.example.todoapp.Todo">

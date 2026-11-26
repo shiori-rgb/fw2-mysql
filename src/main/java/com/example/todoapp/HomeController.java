@@ -35,15 +35,24 @@ public class HomeController {
             @RequestParam(name = "category", defaultValue = "") String category,
             @RequestParam(name = "order", defaultValue = "asc") String order,
             @RequestParam(name = "showCompleted", defaultValue = "false") boolean showCompleted,
+            @RequestParam(name = "page", defaultValue = "1") int page,
             Model model) {
         String selectedCategory = "すべて".equals(category) ? "" : category;
         String selectedOrder = "desc".equals(order) ? "desc" : "asc";
-        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder, showCompleted);
+        int pageSize = 10;
+        int totalCount = todoService.count(keyword, selectedCategory, showCompleted);
+        int totalPages = Math.max(1, (totalCount + pageSize - 1) / pageSize);
+        int selectedPage = Math.min(Math.max(page, 1), totalPages);
+        int offset = (selectedPage - 1) * pageSize;
+        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder, showCompleted, offset,
+                pageSize);
         model.addAttribute("todos", todos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", selectedCategory);
         model.addAttribute("order", selectedOrder);
         model.addAttribute("showCompleted", showCompleted);
+        model.addAttribute("page", selectedPage);
+        model.addAttribute("totalPages", totalPages);
         return "todos";
     }
 
