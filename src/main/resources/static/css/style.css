@@ -888,6 +888,59 @@ body.sidebar-collapsed .container {
     padding-top: 16px;
 }
 
+.quick-add-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.quick-add-input {
+    flex: 1;
+    font-size: 18px;
+}
+
+.quick-add-recognized {
+    min-height: 24px;
+    margin: 10px 0;
+    color: var(--theme-main);
+}
+
+.quick-add-warnings {
+    min-height: 24px;
+    margin: 10px 0;
+    color: var(--theme-warning);
+}
+
+.quick-add-preview {
+    margin: 20px 0;
+    padding: 18px;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-card-bg);
+}
+
+.quick-add-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 12px 18px;
+}
+
+.quick-add-recognized-field {
+    border-color: var(--theme-main) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-main) 25%, transparent);
+}
+
+@media (max-width: 600px) {
+    .quick-add-input-row,
+    .quick-add-grid {
+        display: block;
+    }
+
+    .quick-add-input-row .btn {
+        margin-top: 10px;
+    }
+}
+
 .timer-controls {
     display: flex;
     align-items: center;

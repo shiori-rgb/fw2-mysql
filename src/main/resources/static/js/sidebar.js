@@ -17,7 +17,7 @@
     }[language];
 
     const items = [
-        { id: 'quickAdd', icon: '+', href: '/todos/new', action: 'quick' },
+        { id: 'quickAdd', icon: '+', href: '/quick-add', action: 'quick' },
         { id: 'inbox', icon: '▣', href: '/todos?sidebar=inbox' },
         { id: 'today', icon: '☀', href: '/todos?sidebar=today' },
         { id: 'tomorrow', icon: '›', href: '/todos?sidebar=tomorrow' },
@@ -37,7 +37,7 @@
     function isActive(item) {
         const path = window.location.pathname;
         const params = new URLSearchParams(window.location.search);
-        if (item.id === 'quickAdd') return path === '/todos/new';
+        if (item.id === 'quickAdd') return path === '/quick-add';
         if (item.id === 'calendar') return path === '/calendar';
         if (item.id === 'burndown') return path === '/burndown';
         if (item.id === 'projects') return path === '/projects' || path.startsWith('/projects/');

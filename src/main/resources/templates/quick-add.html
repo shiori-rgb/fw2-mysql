@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{quickAdd.title}">クイック追加</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container quick-add-page">
+        <h1 class="page-title" th:text="#{quickAdd.title}">クイック追加</h1>
+        <p th:text="#{quickAdd.description}">自然な日本語で入力してください。</p>
+
+        <form id="quickAddForm" action="/quick-add" method="post">
+            <div class="quick-add-input-row">
+                <input class="form-input quick-add-input" id="quickText" type="text" autocomplete="off"
+                       th:placeholder="#{quickAdd.placeholder}" placeholder="明日18時からBlenderを2時間 #仕事 優先度高">
+                <button class="btn" type="submit" th:text="#{quickAdd.register}">登録</button>
+            </div>
+            <div id="quickAddRecognized" class="quick-add-recognized" aria-live="polite"></div>
+            <div id="quickAddWarnings" class="quick-add-warnings" aria-live="polite"></div>
+
+            <section class="quick-add-preview">
+                <h2 th:text="#{quickAdd.preview}">解析結果（修正できます）</h2>
+                <div class="form-row">
+                    <label class="form-label" for="title" th:text="#{todo.title}">タスク名</label>
+                    <input class="form-input" id="title" name="title" required>
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="category" th:text="#{todo.category}">ジャンル</label>
+                    <select class="form-input" id="category" name="category">
+                        <option value="プログラミング" th:text="#{todo.category.programming}">プログラミング</option>
+                        <option value="デザイン" th:text="#{todo.category.design}">デザイン</option>
+                        <option value="マーケティング" th:text="#{todo.category.marketing}">マーケティング</option>
+                        <option value="資格" th:text="#{todo.category.qualification}">資格</option>
+                        <option value="就職活動" th:text="#{todo.category.jobHunting}">就職活動</option>
+                    </select>
+                </div>
+                <div class="quick-add-grid">
+                    <div class="form-row"><label class="form-label" for="scheduledDate" th:text="#{timeBlock.scheduledDate}">実行予定日</label><input class="form-input" type="date" id="scheduledDate" name="scheduledDate"></div>
+                    <div class="form-row"><label class="form-label" for="dueDate" th:text="#{todo.dueDate}">期限</label><input class="form-input" type="date" id="dueDate" name="dueDate"></div>
+                    <div class="form-row"><label class="form-label" for="plannedStartTime" th:text="#{timeBlock.startTime}">開始予定時間</label><input class="form-input" type="time" id="plannedStartTime" name="plannedStartTime"></div>
+                    <div class="form-row"><label class="form-label" for="plannedEndTime" th:text="#{timeBlock.endTime}">終了予定時間</label><input class="form-input" type="time" id="plannedEndTime" name="plannedEndTime"></div>
+                    <div class="form-row"><label class="form-label" for="plannedMinutes" th:text="#{timeBlock.plannedMinutes}">予定作業時間（分）</label><input class="form-input" type="number" min="0" id="plannedMinutes" name="plannedMinutes"></div>
+                    <div class="form-row"><label class="form-label" for="priority" th:text="#{todo.priority}">優先度</label><select class="form-input" id="priority" name="priority"><option value="1" th:text="#{todo.priority.high}">高</option><option value="2" selected th:text="#{todo.priority.middle}">中</option><option value="3" th:text="#{todo.priority.low}">低</option></select></div>
+                    <div class="form-row"><label class="form-label" for="projectId" th:text="#{project.name}">プロジェクト</label><select class="form-input" id="projectId" name="projectId"><option value="" th:text="#{project.none}">プロジェクトなし</option><option th:each="project : ${projects}" th:value="${project.id}" th:text="|${project.icon} ${project.name}|">プロジェクト</option></select></div>
+                </div>
+            </section>
+        </form>
+        <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
+    </div>
+    <script>
+        const quickText = document.querySelector('#quickText');
+        const form = document.querySelector('#quickAddForm');
+        const fields = ['title', 'scheduledDate', 'dueDate', 'plannedStartTime', 'plannedEndTime', 'plannedMinutes', 'priority'];
+        const value = (id) => document.querySelector(`#${id}`);
+        function mark(id, active) { value(id).classList.toggle('quick-add-recognized-field', active); }
+        function updatePreview(result) {
+            value('title').value = result.title || '';
+            value('scheduledDate').value = result.scheduledDate || '';
+            value('dueDate').value = result.dueDate || '';
+            value('plannedStartTime').value = result.plannedStartTime ? result.plannedStartTime.slice(0, 5) : '';
+            value('plannedEndTime').value = result.plannedEndTime ? result.plannedEndTime.slice(0, 5) : '';
+            value('plannedMinutes').value = result.plannedMinutes || '';
+            if (result.priority) value('priority').value = result.priority;
+            if (result.projectId) value('projectId').value = result.projectId;
+            fields.forEach((id) => mark(id, Boolean(value(id).value)));
+            document.querySelector('#quickAddRecognized').textContent = result.recognized.length ? `認識: ${result.recognized.join(' / ')}` : '';
+            document.querySelector('#quickAddWarnings').textContent = result.warnings.join(' / ');
+        }
+        let timer;
+        async function parseQuickText() {
+            clearTimeout(timer);
+            timer = setTimeout(async () => {
+                if (!quickText.value.trim()) { updatePreview({title: '', recognized: [], warnings: []}); return; }
+                const response = await fetch('/api/quick-add/parse', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: quickText.value}) });
+                if (response.ok) updatePreview(await response.json());
+            }, 180);
+        }
+        quickText.addEventListener('input', parseQuickText);
+        quickText.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); form.requestSubmit(); } });
+    </script>
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
+</body>
+</html>
