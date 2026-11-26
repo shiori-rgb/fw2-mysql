@@ -63,7 +63,10 @@
             <tbody>
                 <tr th:each="todo : ${todos}"
                     th:attr="data-due-date=${todo.dueDate},data-completed=${todo.completed}">
-                    <td th:text="${todo.title}"></td>
+                    <td>
+                        <span th:if="${todo.pinned}">★ </span>
+                        <span th:text="${todo.title}"></span>
+                    </td>
                     <td th:text="${todo.category}"></td>
                     <td>
                         <span th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></span>
@@ -76,10 +79,20 @@
                               th:text="| (${#temporals.format(todo.completedAt, 'yyyy-MM-dd HH:mm')})|"></span>
                     </td>
                     <td>
-                        <span th:if="${trash == 0}">
+                        <div th:if="${trash == 0}">
+                            <form th:action="@{/todos/{id}/pin(id=${todo.id})}" method="post">
+                                <input type="hidden" name="keyword" th:value="${keyword}">
+                                <input type="hidden" name="category" th:value="${category}">
+                                <input type="hidden" name="order" th:value="${order}">
+                                <input type="hidden" name="showCompleted" th:value="${showCompleted}">
+                                <input type="hidden" name="page" th:value="${page}">
+                                <input type="hidden" name="trash" th:value="${trash}">
+                                <button class="link" type="submit"
+                                        th:text="${todo.pinned ? '印を外す' : '印を付ける'}"></button>
+                            </form>
                             <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
                             <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
-                        </span>
+                        </div>
                         <form th:if="${trash == 1}" th:action="@{/todos/{id}/restore(id=${todo.id})}" method="post">
                             <button class="link" type="submit">戻す</button>
                         </form>

@@ -146,4 +146,24 @@ public class HomeController {
         redirectAttributes.addFlashAttribute("message", "戻しました");
         return "redirect:/todos?trash=1";
     }
+
+    @PostMapping("/todos/{id}/pin")
+    public String togglePin(
+            @PathVariable Long id,
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "category", defaultValue = "") String category,
+            @RequestParam(name = "order", defaultValue = "asc") String order,
+            @RequestParam(name = "showCompleted", defaultValue = "false") boolean showCompleted,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "trash", defaultValue = "0") int trash,
+            RedirectAttributes redirectAttributes) {
+        todoService.togglePinned(id);
+        redirectAttributes.addAttribute("keyword", keyword);
+        redirectAttributes.addAttribute("category", category);
+        redirectAttributes.addAttribute("order", order);
+        redirectAttributes.addAttribute("showCompleted", showCompleted);
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("trash", trash);
+        return "redirect:/todos";
+    }
 }

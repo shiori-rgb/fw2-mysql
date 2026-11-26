@@ -80,4 +80,10 @@ public class TodoService {
         log.info("Todo restoration completed: id={}", id);
         return result;
     }
+
+    public int togglePinned(Long id) {
+        int result = todoMapper.togglePinned(id);
+        log.info("Todo pin toggled: id={}", id);
+        return result;
+    }
 }

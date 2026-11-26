@@ -5,7 +5,7 @@
 <mapper namespace="com.example.todoapp.TodoMapper">
 
     <select id="search" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, pinned, created_at, updated_at
         FROM todos
         <where>
             <if test="keyword != null and keyword != ''">
@@ -32,10 +32,10 @@
         </where>
         <choose>
             <when test="order == 'desc'">
-                ORDER BY due_date DESC
+                ORDER BY pinned DESC, due_date DESC
             </when>
             <otherwise>
-                ORDER BY due_date ASC
+                ORDER BY pinned DESC, due_date ASC
             </otherwise>
         </choose>
         <if test="limit != null">
@@ -66,7 +66,7 @@
     </select>
 
     <select id="findById" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, pinned, created_at, updated_at
         FROM todos
         WHERE id = #{id}
           AND deleted_at IS NULL
@@ -101,6 +101,13 @@
         SET deleted_at = NULL
         WHERE id = #{id}
           AND deleted_at IS NOT NULL
+    </update>
+
+    <update id="togglePinned">
+        UPDATE todos
+        SET pinned = NOT pinned
+        WHERE id = #{id}
+          AND deleted_at IS NULL
     </update>
 
 </mapper>
