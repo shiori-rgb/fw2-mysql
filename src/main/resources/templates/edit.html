@@ -60,6 +60,27 @@
             <button class="btn" type="submit">確認する</button>
             <a class="btn sub" href="/todos">一覧へ</a>
         </form>
+
+        <section class="form-row">
+            <h2>添付ファイル</h2>
+            <form th:action="@{/todos/{todoId}/attachments(todoId=${id})}"
+                  method="post" enctype="multipart/form-data">
+                <input class="form-input" type="file" name="file" required>
+                <button class="btn sub" type="submit">ファイルを追加</button>
+            </form>
+            <ul th:if="${!#lists.isEmpty(attachments)}">
+                <li th:each="attachment : ${attachments}">
+                    <a class="link"
+                       th:href="@{/attachments/{id}/download(id=${attachment.id})}"
+                       th:text="${attachment.originalFilename}">ファイル</a>
+                    <form class="attachment-delete"
+                          th:action="@{/attachments/{id}/delete(id=${attachment.id})}"
+                          method="post">
+                        <button class="link" type="submit">削除</button>
+                    </form>
+                </li>
+            </ul>
+        </section>
     </div>
 </body>
 </html>

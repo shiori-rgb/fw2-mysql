@@ -18,9 +18,11 @@ import jakarta.validation.Valid;
 public class HomeController {
 
     private final TodoService todoService;
+    private final TodoAttachmentService attachmentService;
 
-    public HomeController(TodoService todoService) {
+    public HomeController(TodoService todoService, TodoAttachmentService attachmentService) {
         this.todoService = todoService;
+        this.attachmentService = attachmentService;
     }
 
     @GetMapping("/")
@@ -93,6 +95,7 @@ public class HomeController {
         }
         model.addAttribute("todo", todo);
         model.addAttribute("id", id);
+        model.addAttribute("attachments", attachmentService.findByTodoId(id));
         return "edit";
     }
 

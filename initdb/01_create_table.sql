@@ -18,6 +18,21 @@ CREATE TABLE todos (
     CONSTRAINT chk_todos_priority CHECK (priority IN (1, 2, 3))
 );
 
+CREATE TABLE todo_attachments (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    todo_id BIGINT NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    content_type VARCHAR(255) NULL,
+    file_size BIGINT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_todo_attachments_stored_filename (stored_filename),
+    CONSTRAINT fk_todo_attachments_todo
+        FOREIGN KEY (todo_id) REFERENCES todos(id)
+        ON DELETE CASCADE
+);
+
 UPDATE todos
 SET completed_at = '2026-04-05 00:00:00'
 WHERE completed = TRUE

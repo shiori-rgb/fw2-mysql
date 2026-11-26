@@ -18,6 +18,10 @@ body {
     padding: 24px 16px;
 }
 
+.todo-list-page {
+    padding-bottom: 100px;
+}
+
 .page-title {
     margin: 0 0 24px;
     color: #f8fafc;
@@ -254,4 +258,8 @@ body {
 
 .calendar-todo-link:hover {
     text-decoration: underline;
+}
+
+.attachment-delete {
+    display: inline;
 }
