@@ -5,7 +5,7 @@
 <mapper namespace="com.example.todoapp.TodoMapper">
 
     <select id="search" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, pinned, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, project_id, section_id, completed, completed_at, deleted_at, pinned, created_at, updated_at
         FROM todos
         <where>
             <if test="keyword != null and keyword != ''">
@@ -78,15 +78,15 @@
     </select>
 
     <select id="findById" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, pinned, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, project_id, section_id, completed, completed_at, deleted_at, pinned, created_at, updated_at
         FROM todos
         WHERE id = #{id}
           AND deleted_at IS NULL
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO todos (title, detail, category, priority, due_date, completed)
-        VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate}, COALESCE(#{completed}, FALSE))
+        INSERT INTO todos (title, detail, category, priority, due_date, project_id, section_id, completed)
+        VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate}, #{projectId}, #{sectionId}, COALESCE(#{completed}, FALSE))
     </insert>
 
     <update id="update">
@@ -96,6 +96,8 @@
             category = #{category},
             priority = #{priority},
             due_date = #{dueDate},
+            project_id = #{projectId},
+            section_id = #{sectionId},
             completed = #{completed},
             completed_at = #{completedAt}
         WHERE id = #{id}

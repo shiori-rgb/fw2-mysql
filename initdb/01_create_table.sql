@@ -5,6 +5,8 @@ CREATE TABLE todos (
     category VARCHAR(255) NOT NULL,
     priority INT NOT NULL DEFAULT 2,
     due_date DATE NULL,
+    project_id BIGINT NULL,
+    section_id BIGINT NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     completed_at DATETIME NULL,
     deleted_at DATETIME NULL,
@@ -17,6 +19,37 @@ CREATE TABLE todos (
     ),
     CONSTRAINT chk_todos_priority CHECK (priority IN (1, 2, 3))
 );
+
+CREATE TABLE projects (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(1000) NULL,
+    target_date DATE NULL,
+    icon VARCHAR(16) NOT NULL DEFAULT '●',
+    color VARCHAR(16) NOT NULL DEFAULT '#596579',
+    favorite BOOLEAN NOT NULL DEFAULT FALSE,
+    archived BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE project_sections (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    project_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_project_sections_project
+        FOREIGN KEY (project_id) REFERENCES projects(id)
+        ON DELETE CASCADE
+);
+
+ALTER TABLE todos
+    ADD CONSTRAINT fk_todos_project
+        FOREIGN KEY (project_id) REFERENCES projects(id)
+        ON DELETE SET NULL,
+    ADD CONSTRAINT fk_todos_section
+        FOREIGN KEY (section_id) REFERENCES project_sections(id)
+        ON DELETE SET NULL;
 
 CREATE TABLE todo_attachments (
     id BIGINT NOT NULL AUTO_INCREMENT,

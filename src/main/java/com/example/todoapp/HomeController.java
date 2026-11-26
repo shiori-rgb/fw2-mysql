@@ -23,11 +23,14 @@ public class HomeController {
     private final TodoService todoService;
     private final TodoAttachmentService attachmentService;
     private final MessageSource messageSource;
+    private final ProjectService projectService;
 
-    public HomeController(TodoService todoService, TodoAttachmentService attachmentService, MessageSource messageSource) {
+    public HomeController(TodoService todoService, TodoAttachmentService attachmentService, MessageSource messageSource,
+            ProjectService projectService) {
         this.todoService = todoService;
         this.attachmentService = attachmentService;
         this.messageSource = messageSource;
+        this.projectService = projectService;
     }
 
     @GetMapping("/")
@@ -96,20 +99,24 @@ public class HomeController {
     }
 
     @GetMapping("/todos/new")
-    public String create(@ModelAttribute("todo") Todo todo) {
+    public String create(@ModelAttribute("todo") Todo todo, Model model) {
+        addProjectOptions(model);
         return "create";
     }
 
     @PostMapping("/todos/confirm")
-    public String confirm(@Valid @ModelAttribute("todo") Todo todo, BindingResult bindingResult) {
+    public String confirm(@Valid @ModelAttribute("todo") Todo todo, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+            addProjectOptions(model);
             return "create";
         }
+        addProjectNames(model, todo);
         return "create-confirm";
     }
 
     @PostMapping("/todos/new")
-    public String rewrite(@ModelAttribute("todo") Todo todo) {
+    public String rewrite(@ModelAttribute("todo") Todo todo, Model model) {
+        addProjectOptions(model);
         return "create";
     }
 
@@ -130,6 +137,7 @@ public class HomeController {
         model.addAttribute("todo", todo);
         model.addAttribute("id", id);
         model.addAttribute("attachments", attachmentService.findByTodoId(id));
+        addProjectOptions(model);
         return "edit";
     }
 
@@ -138,14 +146,17 @@ public class HomeController {
             BindingResult bindingResult, Model model) {
         model.addAttribute("id", id);
         if (bindingResult.hasErrors()) {
+            addProjectOptions(model);
             return "edit";
         }
+        addProjectNames(model, todo);
         return "edit-confirm";
     }
 
     @PostMapping("/todos/{id}/edit")
     public String editRewrite(@PathVariable Long id, @ModelAttribute("todo") Todo todo, Model model) {
         model.addAttribute("id", id);
+        addProjectOptions(model);
         return "edit";
     }
 
@@ -206,5 +217,34 @@ public class HomeController {
 
     private String message(String key) {
         return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
+    }
+
+    private void addProjectOptions(Model model) {
+        List<Project> projects = projectService.findActive();
+        List<ProjectSection> sections = projects.stream()
+                .flatMap(project -> projectService.findSections(project.getId()).stream())
+                .toList();
+        model.addAttribute("projects", projects);
+        model.addAttribute("projectSections", sections);
+    }
+
+    private void addProjectNames(Model model, Todo todo) {
+        String projectName = message("project.none");
+        String sectionName = message("project.section.none");
+        if (todo.getProjectId() != null) {
+            Project project = projectService.findById(todo.getProjectId());
+            if (project != null) {
+                projectName = project.getName();
+            }
+        }
+        if (todo.getSectionId() != null && todo.getProjectId() != null) {
+            sectionName = projectService.findSections(todo.getProjectId()).stream()
+                    .filter(section -> todo.getSectionId().equals(section.getId()))
+                    .map(ProjectSection::getName)
+                    .findFirst()
+                    .orElse(sectionName);
+        }
+        model.addAttribute("selectedProjectName", projectName);
+        model.addAttribute("selectedSectionName", sectionName);
     }
 }

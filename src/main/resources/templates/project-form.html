@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${project.id == null ? #messages.msg('project.create') : #messages.msg('project.edit')}">プロジェクト</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container project-page">
+        <h1 class="page-title" th:text="${project.id == null ? #messages.msg('project.create') : #messages.msg('project.edit')}">プロジェクト</h1>
+        <form th:object="${project}" th:action="${project.id == null ? '/projects' : '/projects/' + project.id}" method="post">
+            <div class="form-row">
+                <label class="form-label" for="name" th:text="#{project.name}">プロジェクト名</label>
+                <input class="form-input" id="name" type="text" th:field="*{name}">
+                <p class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="description" th:text="#{project.description}">説明</label>
+                <textarea class="form-input" id="description" th:field="*{description}"></textarea>
+                <p class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="targetDate" th:text="#{project.targetDate}">目標期限</label>
+                <input class="form-input" id="targetDate" type="date" th:field="*{targetDate}">
+            </div>
+            <div class="form-row project-form__inline">
+                <div>
+                    <label class="form-label" for="icon" th:text="#{project.icon}">アイコン</label>
+                    <input class="form-input" id="icon" type="text" maxlength="4" th:field="*{icon}" placeholder="●">
+                </div>
+                <div>
+                    <label class="form-label" for="color" th:text="#{project.color}">カラー</label>
+                    <input class="form-input project-color-input" id="color" type="color" th:field="*{color}">
+                </div>
+            </div>
+            <label class="form-label"><input type="checkbox" th:field="*{favorite}"> <span th:text="#{project.favorite}">お気に入り</span></label>
+            <button class="btn" type="submit" th:text="${project.id == null ? #messages.msg('project.create') : #messages.msg('common.save')}">保存</button>
+            <a class="btn sub" href="/projects" th:text="#{common.cancel}">やめる</a>
+        </form>
+    </div>
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
+</body>
+</html>

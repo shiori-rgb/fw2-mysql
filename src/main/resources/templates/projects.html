@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{project.list}">プロジェクト</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container project-page">
+        <h1 class="page-title" th:text="#{project.list}">プロジェクト</h1>
+        <a class="btn" href="/projects/new" th:text="#{project.create}">プロジェクトを作成</a>
+        <div class="project-grid">
+            <article class="project-card" th:each="project : ${projects}">
+                <div class="project-card__heading">
+                    <span class="project-icon" th:style="|background:${project.color}|" th:text="${project.icon}">●</span>
+                    <a class="project-card__name" th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}">プロジェクト</a>
+                    <span th:if="${project.favorite}" class="project-favorite">★</span>
+                </div>
+                <p th:if="${project.description != null}" th:text="${project.description}"></p>
+                <div class="project-card__meta">
+                    <span th:text="|#{project.progress}: ${project.totalTaskCount == 0 ? 0 : project.completedTaskCount * 100 / project.totalTaskCount}%|">達成率: 0%</span>
+                    <span th:text="|#{project.completed}: ${project.completedTaskCount} / #{project.incomplete}: ${project.totalTaskCount - project.completedTaskCount}|">完了: 0 / 未完了: 0</span>
+                </div>
+                <a class="link" th:href="@{/projects/{id}/edit(id=${project.id})}" th:text="#{project.edit}">編集</a>
+            </article>
+        </div>
+    </div>
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${project.name}">プロジェクト</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container project-page">
+        <div class="project-detail__heading">
+            <span class="project-icon project-icon--large" th:style="|background:${project.color}|" th:text="${project.icon}">●</span>
+            <div><h1 class="page-title" th:text="${project.name}">プロジェクト</h1><p th:text="${project.description}"></p></div>
+        </div>
+        <div class="project-actions">
+            <a class="btn" th:href="@{/projects/{id}/edit(id=${project.id})}" th:text="#{project.edit}">編集</a>
+            <form th:action="@{/projects/{id}/favorite(id=${project.id})}" method="post"><button class="btn sub" type="submit" th:text="${project.favorite ? '★' : '☆'}">☆</button></form>
+            <form th:action="@{/projects/{id}/archive(id=${project.id})}" method="post"><input type="hidden" name="archived" th:value="${!project.archived}"><button class="btn sub" type="submit" th:text="${project.archived ? #messages.msg('project.unarchive') : #messages.msg('project.archive')}">アーカイブ</button></form>
+            <form th:action="@{/projects/{id}/delete(id=${project.id})}" method="post" onsubmit="return confirm('プロジェクトだけを削除します。タスクは残ります。よろしいですか？');"><button class="btn sub" type="submit" th:text="#{project.delete}">削除</button></form>
+        </div>
+        <div class="project-progress">
+            <strong th:text="|#{project.progress}: ${project.totalTaskCount == 0 ? 0 : project.completedTaskCount * 100 / project.totalTaskCount}%|">達成率: 0%</strong>
+            <span th:text="|#{project.completed}: ${project.completedTaskCount} / #{project.incomplete}: ${project.totalTaskCount - project.completedTaskCount}|">完了: 0 / 未完了: 0</span>
+            <div class="project-progress__bar"><span th:style="|width:${project.totalTaskCount == 0 ? 0 : project.completedTaskCount * 100 / project.totalTaskCount}%|"></span></div>
+        </div>
+        <section class="project-section" th:each="section : ${sections}">
+            <h2 th:text="${section.name}">セクション</h2>
+            <ul class="project-task-list">
+                <li th:each="todo : ${tasksBySection[section.id]}"><span th:text="${todo.completed ? '✓' : '○'}"></span> <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="${todo.title}">タスク</a></li>
+            </ul>
+        </section>
+        <section class="project-section" th:if="${!#lists.isEmpty(unsectionedTasks)}">
+            <h2 th:text="#{project.section.none}">セクションなし</h2>
+            <ul class="project-task-list"><li th:each="todo : ${unsectionedTasks}"><span th:text="${todo.completed ? '✓' : '○'}"></span> <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="${todo.title}">タスク</a></li></ul>
+        </section>
+        <p th:if="${project.totalTaskCount == 0}" th:text="#{project.noTasks}">このプロジェクトにはタスクがありません。</p>
+        <form class="project-section-add" th:action="@{/projects/{id}/sections(id=${project.id})}" method="post">
+            <input class="form-input" type="text" name="name" th:placeholder="#{project.addSection}" required>
+            <button class="btn" type="submit" th:text="#{project.addSection}">セクションを追加</button>
+        </form>
+    </div>
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
+</body>
+</html>

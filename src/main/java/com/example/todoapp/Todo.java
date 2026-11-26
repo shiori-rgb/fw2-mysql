@@ -32,6 +32,9 @@ public class Todo {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
+    private Long projectId;
+    private Long sectionId;
+
     private Boolean completed;
     private LocalDateTime completedAt;
     private LocalDateTime deletedAt;

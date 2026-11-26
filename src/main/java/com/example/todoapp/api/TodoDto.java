@@ -13,6 +13,8 @@ public class TodoDto {
     private String category;
     private Integer priority;
     private LocalDate dueDate;
+    private Long projectId;
+    private Long sectionId;
     private Boolean completed;
     private LocalDateTime completedAt;
     private LocalDateTime createdAt;
@@ -26,6 +28,8 @@ public class TodoDto {
         dto.category = todo.getCategory();
         dto.priority = todo.getPriority();
         dto.dueDate = todo.getDueDate();
+        dto.projectId = todo.getProjectId();
+        dto.sectionId = todo.getSectionId();
         dto.completed = todo.getCompleted();
         dto.completedAt = todo.getCompletedAt();
         dto.createdAt = todo.getCreatedAt();
@@ -55,6 +59,14 @@ public class TodoDto {
 
     public LocalDate getDueDate() {
         return dueDate;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public Long getSectionId() {
+        return sectionId;
     }
 
     public Boolean getCompleted() {

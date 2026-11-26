@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todoapp.ProjectMapper">
+
+    <select id="findAll" resultType="com.example.todoapp.Project">
+        SELECT id, name, description, target_date, icon, color, favorite, archived
+        FROM projects
+        <where>
+            <if test="!includeArchived">
+                archived = FALSE
+            </if>
+        </where>
+        ORDER BY favorite DESC, name ASC
+    </select>
+
+    <select id="findById" resultType="com.example.todoapp.Project">
+        SELECT id, name, description, target_date, icon, color, favorite, archived
+        FROM projects
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO projects (name, description, target_date, icon, color, favorite, archived)
+        VALUES (#{name}, #{description}, #{targetDate}, COALESCE(#{icon}, '●'),
+                COALESCE(#{color}, '#596579'), COALESCE(#{favorite}, FALSE), FALSE)
+    </insert>
+
+    <update id="update">
+        UPDATE projects
+        SET name = #{name}, description = #{description}, target_date = #{targetDate},
+            icon = #{icon}, color = #{color}, favorite = #{favorite}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM projects WHERE id = #{id}
+    </delete>
+
+    <update id="archive">
+        UPDATE projects SET archived = #{archived} WHERE id = #{id}
+    </update>
+
+    <update id="toggleFavorite">
+        UPDATE projects SET favorite = NOT favorite WHERE id = #{id}
+    </update>
+
+    <select id="findSections" resultType="com.example.todoapp.ProjectSection">
+        SELECT id, project_id, name, sort_order
+        FROM project_sections
+        WHERE project_id = #{projectId}
+        ORDER BY sort_order, id
+    </select>
+
+    <insert id="insertSection" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO project_sections (project_id, name, sort_order)
+        VALUES (#{projectId}, #{name}, #{sortOrder})
+    </insert>
+
+    <select id="findTasks" resultType="com.example.todoapp.Todo">
+        SELECT id, title, detail, category, priority, due_date, project_id, section_id,
+               completed, completed_at, deleted_at, pinned, created_at, updated_at
+        FROM todos
+        WHERE project_id = #{projectId} AND deleted_at IS NULL
+        ORDER BY section_id, pinned DESC, due_date ASC, id
+    </select>
+
+    <select id="countTasks" resultType="int">
+        SELECT COUNT(*) FROM todos
+        WHERE project_id = #{projectId} AND deleted_at IS NULL
+    </select>
+
+    <select id="countCompletedTasks" resultType="int">
+        SELECT COUNT(*) FROM todos
+        WHERE project_id = #{projectId} AND deleted_at IS NULL AND completed = TRUE
+    </select>
+</mapper>

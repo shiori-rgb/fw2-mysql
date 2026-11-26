@@ -18,6 +18,8 @@
         <p class="confirm-value"><span th:text="#{todo.detail}">メモ</span>：<span th:text="${#strings.isEmpty(todo.detail) ? #messages.msg('common.inputNone') : todo.detail}"></span></p>
         <p class="confirm-value"><span th:text="#{todo.category}">ジャンル</span>：<span th:text="${#strings.isEmpty(todo.category) ? #messages.msg('common.inputNone') : todo.category}"></span></p>
         <p class="confirm-value"><span th:text="#{todo.priority}">優先度</span>：<span th:text="${todo.priority == null ? #messages.msg('common.inputNone') : (todo.priority == 1 ? #messages.msg('todo.priority.high') : (todo.priority == 2 ? #messages.msg('todo.priority.middle') : #messages.msg('todo.priority.low')))}"></span></p>
+        <p class="confirm-value"><span th:text="#{project.name}">プロジェクト</span>：<span th:text="${selectedProjectName}"></span></p>
+        <p class="confirm-value"><span th:text="#{project.section}">セクション</span>：<span th:text="${selectedSectionName}"></span></p>
         <p class="confirm-value"><span th:text="#{todo.dueDate}">期限</span>：<span th:text="${todo.dueDate == null ? #messages.msg('common.inputNone') : todo.dueDate}"></span></p>
         <p class="confirm-value"><span th:text="#{todo.completed}">完了</span>：<span th:text="${todo.completed == null ? #messages.msg('common.inputNone') : (todo.completed ? #messages.msg('todo.status.completed') : #messages.msg('todo.status.incomplete'))}"></span></p>
 
@@ -27,6 +29,8 @@
             <input type="hidden" th:field="*{category}">
             <input type="hidden" th:field="*{priority}">
             <input type="hidden" th:field="*{dueDate}">
+            <input type="hidden" th:field="*{projectId}">
+            <input type="hidden" th:field="*{sectionId}">
             <input type="hidden" name="completed" th:value="${todo.completed}">
 
             <div class="confirm-actions">

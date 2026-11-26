@@ -26,7 +26,7 @@
         { id: 'overdue', icon: '!', href: '/todos?sidebar=overdue' },
         { id: 'all', icon: '☷', href: '/todos?sidebar=all' },
         { id: 'completed', icon: '✓', href: '/todos?sidebar=completed&showCompleted=true' },
-        { id: 'projects', icon: '▤', href: '/todos' },
+        { id: 'projects', icon: '▤', href: '/projects' },
         { id: 'calendar', icon: '□', href: '/calendar' },
         { id: 'burndown', icon: '↘', href: '/burndown' },
         { id: 'productivity', icon: '◒', href: '/productivity' },
@@ -40,6 +40,7 @@
         if (item.id === 'quickAdd') return path === '/todos/new';
         if (item.id === 'calendar') return path === '/calendar';
         if (item.id === 'burndown') return path === '/burndown';
+        if (item.id === 'projects') return path === '/projects' || path.startsWith('/projects/');
         if (item.id === 'productivity') return path === '/productivity';
         if (item.id === 'settings') return path === '/settings';
         if (item.id === 'deleted') return path === '/todos' && params.get('trash') === '1';
@@ -47,7 +48,7 @@
         return params.get('sidebar') === item.id || (item.id === 'inbox' && !params.get('sidebar') && params.get('trash') !== '1');
     }
 
-    function createSidebar(counts) {
+    function createSidebar(counts, projects) {
         const sidebar = document.createElement('aside');
         sidebar.className = 'app-sidebar';
         sidebar.innerHTML = '<div class="app-sidebar__header"><span class="app-sidebar__brand">ToDo</span><button class="app-sidebar__collapse" type="button"></button></div><nav class="app-sidebar__nav"></nav>';
@@ -66,6 +67,18 @@
                 link.insertAdjacentHTML('beforeend', `<span class="app-sidebar__count">${count}</span>`);
             }
             nav.appendChild(link);
+            if (item.id === 'projects' && projects.length > 0) {
+                const projectList = document.createElement('div');
+                projectList.className = 'app-sidebar__project-list';
+                projects.forEach((project) => {
+                    const projectLink = document.createElement('a');
+                    projectLink.className = 'app-sidebar__project-link';
+                    projectLink.href = `/projects/${project.id}`;
+                    projectLink.textContent = `${project.icon || '●'} ${project.name}`;
+                    projectList.appendChild(projectLink);
+                });
+                nav.appendChild(projectList);
+            }
         });
 
         const collapse = sidebar.querySelector('.app-sidebar__collapse');
@@ -88,8 +101,10 @@
         document.body.appendChild(mobileToggle);
     }
 
-    fetch('/api/sidebar/counts')
-        .then((response) => response.ok ? response.json() : {})
-        .catch(() => ({}))
-        .then((counts) => createSidebar(counts));
+    Promise.all([
+        fetch('/api/sidebar/counts').then((response) => response.ok ? response.json() : {}),
+        fetch('/api/sidebar/projects').then((response) => response.ok ? response.json() : [])
+    ])
+        .catch(() => [{}, []])
+        .then(([counts, projects]) => createSidebar(counts, projects));
 })();

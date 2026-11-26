@@ -52,6 +52,24 @@
             </div>
 
             <div class="form-row">
+                <label class="form-label" for="projectId" th:text="#{project.name}">プロジェクト</label>
+                <select class="form-input" id="projectId" th:field="*{projectId}">
+                    <option value="" th:text="#{project.none}">プロジェクトなし</option>
+                    <option th:each="project : ${projects}" th:value="${project.id}"
+                            th:text="|${project.icon} ${project.name}|">プロジェクト</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label" for="sectionId" th:text="#{project.section}">セクション</label>
+                <select class="form-input" id="sectionId" th:field="*{sectionId}">
+                    <option value="" th:text="#{project.section.none}">セクションなし</option>
+                    <option th:each="section : ${projectSections}" th:value="${section.id}"
+                            th:text="${section.name}">セクション</option>
+                </select>
+            </div>
+
+            <div class="form-row">
                 <label class="form-label" for="dueDate" th:text="#{todo.dueDate}">期限</label>
                 <input class="form-input" type="date" id="dueDate" th:field="*{dueDate}">
             </div>

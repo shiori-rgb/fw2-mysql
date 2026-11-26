@@ -27,6 +27,10 @@ public class TodoRequest {
 
     private LocalDate dueDate;
 
+    private Long projectId;
+
+    private Long sectionId;
+
     private Boolean completed;
 
     public Todo toTodo() {
@@ -36,6 +40,8 @@ public class TodoRequest {
         todo.setCategory(category);
         todo.setPriority(priority);
         todo.setDueDate(dueDate);
+        todo.setProjectId(projectId);
+        todo.setSectionId(sectionId);
         todo.setCompleted(completed);
         return todo;
     }

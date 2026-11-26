@@ -3,6 +3,7 @@ package com.example.todoapp;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SidebarController {
 
     private final TodoService todoService;
+    private final ProjectService projectService;
 
-    public SidebarController(TodoService todoService) {
+    public SidebarController(TodoService todoService, ProjectService projectService) {
         this.todoService = todoService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/api/sidebar/counts")
@@ -32,6 +35,11 @@ public class SidebarController {
         counts.put("completed", todoService.count(null, null, null, null, true, true, false));
         counts.put("deleted", todoService.count(null, null, null, null, false, false, true));
         return counts;
+    }
+
+    @GetMapping("/api/sidebar/projects")
+    public List<Project> projects() {
+        return projectService.findActive();
     }
 
     private int incomplete(LocalDate from, LocalDate to) {
