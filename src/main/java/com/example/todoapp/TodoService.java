@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -131,7 +133,29 @@ public class TodoService {
         return findById(id);
     }
 
+    @Transactional
     public Todo updateSchedule(Todo todo) {
+        Todo existing = requireTodo(todo.getId());
+        if (Objects.equals(existing.getScheduledDate(), todo.getScheduledDate())
+                && Objects.equals(existing.getDueDate(), todo.getDueDate())
+                && Objects.equals(existing.getPlannedStartTime(), todo.getPlannedStartTime())
+                && Objects.equals(existing.getPlannedEndTime(), todo.getPlannedEndTime())
+                && Objects.equals(existing.getPlannedMinutes(), todo.getPlannedMinutes())) {
+            return existing;
+        }
+        TodoScheduleHistory history = new TodoScheduleHistory();
+        history.setTodoId(todo.getId());
+        history.setOldScheduledDate(existing.getScheduledDate());
+        history.setNewScheduledDate(todo.getScheduledDate());
+        history.setOldDueDate(existing.getDueDate());
+        history.setNewDueDate(todo.getDueDate());
+        history.setOldPlannedStartTime(existing.getPlannedStartTime());
+        history.setNewPlannedStartTime(todo.getPlannedStartTime());
+        history.setOldPlannedEndTime(existing.getPlannedEndTime());
+        history.setNewPlannedEndTime(todo.getPlannedEndTime());
+        history.setOldPlannedMinutes(existing.getPlannedMinutes());
+        history.setNewPlannedMinutes(todo.getPlannedMinutes());
+        todoMapper.insertScheduleHistory(history);
         todoMapper.updateSchedule(todo);
         return findById(todo.getId());
     }

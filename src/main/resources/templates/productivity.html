@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title th:text="#{productivity.title}">生産性分析</title><link rel="stylesheet" href="/css/style.css">
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body><div class="container productivity-page">
+ <h1 class="page-title" th:text="#{productivity.title}">生産性分析</h1>
+ <p class="muted" th:text="#{productivity.basis}">達成率は期間内の完了数÷期間内の対象タスク数です。</p>
+ <form class="productivity-controls" method="get" action="/productivity">
+  <label><span th:text="#{productivity.from}">開始</span><input class="form-input" type="date" name="from" th:value="${report.from}"></label>
+  <label><span th:text="#{productivity.to}">終了</span><input class="form-input" type="date" name="to" th:value="${report.to}"></label>
+  <label><span th:text="#{productivity.group}">集計単位</span><select class="form-input" name="granularity"><option value="day" th:selected="${granularity == 'day'}" th:text="#{productivity.day}">日</option><option value="week" th:selected="${granularity == 'week'}" th:text="#{productivity.week}">週</option><option value="month" th:selected="${granularity == 'month'}" th:text="#{productivity.month}">月</option><option value="year" th:selected="${granularity == 'year'}" th:text="#{productivity.year}">年</option></select></label>
+  <label><span th:text="#{todo.category}">ジャンル</span><select class="form-input" name="category"><option value="" th:text="#{todo.category.all}">すべて</option><option th:each="c : ${categories}" th:value="${c}" th:selected="${c == category}" th:text="${c}"></option></select></label>
+  <label><span th:text="#{productivity.project}">プロジェクト</span><select class="form-input" name="projectId"><option value="" th:text="#{todo.category.all}">すべて</option><option th:each="p : ${projects}" th:value="${p.id}" th:selected="${p.id == projectId}" th:text="${p.name}"></option></select></label>
+  <button class="btn" type="submit" th:text="#{common.filter}">絞り込む</button>
+  <a class="btn sub" th:href="@{/productivity.csv(from=${report.from},to=${report.to},granularity=${granularity},category=${category},projectId=${projectId})}" th:text="#{productivity.csv}">CSV</a>
+ </form>
+ <div class="productivity-metrics">
+  <div class="productivity-card"><span th:text="#{productivity.total}">総タスク</span><strong th:text="${report.totalCount}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.completed}">完了</span><strong th:text="${report.completedCount}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.incomplete}">未完了</span><strong th:text="${report.incompleteCount}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.rate}">達成率</span><strong th:text="${report.completionRate == null ? #messages.msg('productivity.noData') : #numbers.formatDecimal(report.completionRate,1,1) + '%'}">データなし</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.overdue}">期限切れ</span><strong th:text="${report.overdueCount}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.actual}">実績(分)</span><strong th:text="${report.actualMinutes}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.planned}">予定(分)</span><strong th:text="${report.plannedMinutes}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.accuracy}">見積もり精度</span><strong th:text="${report.estimateAccuracy == null ? #messages.msg('productivity.noData') : #numbers.formatDecimal(report.estimateAccuracy,1,1) + '%'}">データなし</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.onTime}">期限内完了</span><strong th:text="${report.onTimeCompletionRate == null ? #messages.msg('productivity.noData') : #numbers.formatDecimal(report.onTimeCompletionRate,1,1) + '%'}">データなし</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.previous}">前期間完了数</span><strong th:text="${report.previousCompletedCount}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.streak}">連続達成日数</span><strong th:text="${report.streakDays}">0</strong></div>
+  <div class="productivity-card"><span th:text="#{productivity.changes}">予定変更回数</span><strong th:text="${report.scheduleChangeCount}">0</strong></div>
+ </div>
+ <div class="productivity-charts">
+  <section class="productivity-chart-card"><h2 th:text="#{productivity.trend}">達成率の推移</h2><div class="productivity-chart"><canvas id="trendChart"></canvas></div></section>
+  <section class="productivity-chart-card"><h2 th:text="#{productivity.plannedActual}">予定時間と実績時間</h2><div class="productivity-chart"><canvas id="timeChart"></canvas></div></section>
+  <section class="productivity-chart-card"><h2 th:text="#{productivity.projectTime}">プロジェクト別作業時間</h2><div class="productivity-chart"><canvas id="projectChart"></canvas></div></section>
+  <section class="productivity-chart-card"><h2 th:text="#{productivity.categoryTime}">ジャンル別作業時間</h2><div class="productivity-chart"><canvas id="categoryChart"></canvas></div></section>
+  <section class="productivity-chart-card productivity-chart-card--wide"><h2 th:text="#{productivity.heatmap}">曜日・時間帯別の活動状況</h2><div id="heatmap" class="productivity-heatmap"></div></section>
+ </div>
+ <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
+</div>
+<script th:inline="javascript">
+ const trend = /*[[${report.trend}]]*/ [], projects = /*[[${report.projectMinutes}]]*/ [], categories = /*[[${report.categoryMinutes}]]*/ [], heat = /*[[${report.heatmap}]]*/ [];
+ function colors(){const s=getComputedStyle(document.documentElement);return {main:s.getPropertyValue('--theme-main').trim(),sub:s.getPropertyValue('--theme-sub').trim(),text:s.getPropertyValue('--theme-text').trim(),muted:s.getPropertyValue('--theme-muted').trim()};}
+ const charts=[]; function draw(){ while(charts.length) charts.pop().destroy(); const c=colors(), labels=trend.map(x=>x.label);
+  charts.push(new Chart(document.getElementById('trendChart'),{type:'line',data:{labels,datasets:[{label:'達成率',data:trend.map(x=>x.completionRate),borderColor:c.main,backgroundColor:c.sub}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,max:100}}}}));
+  charts.push(new Chart(document.getElementById('timeChart'),{type:'bar',data:{labels,datasets:[{label:'予定',data:trend.map(x=>x.planned),backgroundColor:c.sub},{label:'実績',data:trend.map(x=>x.actual),backgroundColor:c.main}]},options:{responsive:true,maintainAspectRatio:false}}));
+  charts.push(new Chart(document.getElementById('projectChart'),{type:'doughnut',data:{labels:projects.map(x=>x.label),datasets:[{data:projects.map(x=>x.value),backgroundColor:[c.main,c.sub,c.muted]}]},options:{responsive:true,maintainAspectRatio:false}}));
+  charts.push(new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels:categories.map(x=>x.label),datasets:[{label:'分',data:categories.map(x=>x.value),backgroundColor:c.main}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y'}}));
+  const box=document.getElementById('heatmap'); box.innerHTML=''; const max=Math.max(1,...heat.map(x=>x.value)); for(let d=1;d<=7;d++){for(let h=0;h<24;h++){const x=heat.find(v=>v.day===d&&v.hour===h);const cell=document.createElement('span');cell.className='productivity-heat-cell';cell.title=`${d}, ${h}:00 (${x?x.value:0})`;cell.style.opacity=String(0.15+(x?x.value/max:0)*0.85);box.appendChild(cell);}}
+ } draw(); window.addEventListener('themechange',draw);
+</script><script src="/js/theme.js" defer></script><script src="/js/sidebar.js" defer></script>
+</body></html>

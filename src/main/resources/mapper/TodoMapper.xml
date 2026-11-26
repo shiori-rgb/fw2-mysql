@@ -161,4 +161,15 @@
           AND deleted_at IS NULL
     </update>
 
+    <insert id="insertScheduleHistory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO todo_schedule_history
+        (todo_id, old_scheduled_date, new_scheduled_date, old_due_date, new_due_date,
+         old_planned_start_time, new_planned_start_time, old_planned_end_time, new_planned_end_time,
+         old_planned_minutes, new_planned_minutes)
+        VALUES
+        (#{todoId}, #{oldScheduledDate}, #{newScheduledDate}, #{oldDueDate}, #{newDueDate},
+         #{oldPlannedStartTime}, #{newPlannedStartTime}, #{oldPlannedEndTime}, #{newPlannedEndTime},
+         #{oldPlannedMinutes}, #{newPlannedMinutes})
+    </insert>
+
 </mapper>

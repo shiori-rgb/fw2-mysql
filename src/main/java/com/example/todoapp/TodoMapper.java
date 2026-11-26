@@ -34,4 +34,6 @@ public interface TodoMapper {
     int updateTimer(Todo todo);
 
     int updateSchedule(Todo todo);
+
+    int insertScheduleHistory(TodoScheduleHistory history);
 }

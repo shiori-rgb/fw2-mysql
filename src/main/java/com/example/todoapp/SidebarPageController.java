@@ -17,12 +17,10 @@ public class SidebarPageController {
         this.messageSource = messageSource;
     }
 
-    @GetMapping({ "/productivity", "/settings" })
+    @GetMapping("/settings")
     public String placeholder(Model model, jakarta.servlet.http.HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
-        String key = request.getRequestURI().equals("/settings")
-                ? "sidebar.settings.title"
-                : "sidebar.productivity.title";
+        String key = "sidebar.settings.title";
         model.addAttribute("title", messageSource.getMessage(key, null, locale));
         model.addAttribute("description", messageSource.getMessage("sidebar.comingSoon", null, locale));
         return "sidebar-placeholder";

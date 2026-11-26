@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todoapp.ProductivityMapper">
+    <select id="findTasks" resultType="com.example.todoapp.ProductivityTask">
+        SELECT t.id, t.category, t.priority, t.due_date, t.scheduled_date,
+               t.planned_start_time, t.planned_minutes, t.actual_seconds,
+               t.completed, t.completed_at, t.project_id, p.name AS project_name
+        FROM todos t LEFT JOIN projects p ON p.id = t.project_id
+        <where>
+            t.deleted_at IS NULL
+            AND ((t.scheduled_date BETWEEN #{from} AND #{to})
+              OR (t.due_date BETWEEN #{from} AND #{to})
+              OR (t.completed_at &gt;= CONCAT(#{from}, ' 00:00:00')
+                  AND t.completed_at &lt; DATE_ADD(#{to}, INTERVAL 1 DAY)))
+            <if test="category != null and category != ''">AND t.category = #{category}</if>
+            <if test="projectId != null">AND t.project_id = #{projectId}</if>
+        </where>
+    </select>
+
+    <select id="countScheduleChanges" resultType="long">
+        SELECT COUNT(*)
+        FROM todo_schedule_history h
+        JOIN todos t ON t.id = h.todo_id
+        WHERE h.changed_at &gt;= #{from} AND h.changed_at &lt; #{to}
+          AND t.deleted_at IS NULL
+          <if test="category != null and category != ''">AND t.category = #{category}</if>
+          <if test="projectId != null">AND t.project_id = #{projectId}</if>
+    </select>
+
+    <select id="findCategories" resultType="string">
+        SELECT DISTINCT category FROM todos WHERE deleted_at IS NULL AND category IS NOT NULL ORDER BY category
+    </select>
+</mapper>

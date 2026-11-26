@@ -74,6 +74,24 @@ CREATE TABLE todo_attachments (
         ON DELETE CASCADE
 );
 
+CREATE TABLE todo_schedule_history (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    todo_id BIGINT NOT NULL,
+    changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    old_scheduled_date DATE NULL,
+    new_scheduled_date DATE NULL,
+    old_due_date DATE NULL,
+    new_due_date DATE NULL,
+    old_planned_start_time TIME NULL,
+    new_planned_start_time TIME NULL,
+    old_planned_end_time TIME NULL,
+    new_planned_end_time TIME NULL,
+    old_planned_minutes INT NULL,
+    new_planned_minutes INT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_schedule_history_todo FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE CASCADE
+);
+
 CREATE TABLE sprint (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
