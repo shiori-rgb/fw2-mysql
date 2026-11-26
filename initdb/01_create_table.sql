@@ -33,6 +33,18 @@ CREATE TABLE todo_attachments (
         ON DELETE CASCADE
 );
 
+CREATE TABLE sprint (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT chk_sprint_dates CHECK (start_date <= end_date)
+);
+
+INSERT INTO sprint (name, start_date, end_date)
+VALUES ('Sprint 2026-11', '2026-11-01', '2026-11-30');
+
 UPDATE todos
 SET completed_at = '2026-04-05 00:00:00'
 WHERE completed = TRUE

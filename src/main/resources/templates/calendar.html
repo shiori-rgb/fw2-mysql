@@ -22,6 +22,7 @@
                 <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(view='week',date=${from})}" th:text="#{common.viewWeek}">週で見る</a>
                 <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(year=${year},month=${month},view='month')}" th:text="#{common.viewMonth}">月で見る</a>
                 <a class="btn sub" href="/todos" th:text="#{common.tableView}">表で見る</a>
+                <a class="btn sub" href="/burndown" th:text="#{common.burndown}">バーンダウンチャート</a>
                 <a class="btn" href="/todos/new" th:text="#{common.new}">新規登録</a>
             </div>
         </nav>

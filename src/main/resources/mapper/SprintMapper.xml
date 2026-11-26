@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todoapp.SprintMapper">
+
+    <select id="findAll" resultType="com.example.todoapp.Sprint">
+        SELECT id, name, start_date, end_date
+        FROM sprint
+        ORDER BY start_date DESC, id DESC
+    </select>
+
+    <select id="findById" resultType="com.example.todoapp.Sprint">
+        SELECT id, name, start_date, end_date
+        FROM sprint
+        WHERE id = #{id}
+    </select>
+
+    <select id="countTodos" resultType="int">
+        SELECT COUNT(*)
+        FROM todos
+        WHERE deleted_at IS NULL
+          AND due_date BETWEEN #{from} AND #{to}
+    </select>
+
+    <select id="countCompletedByDate" resultType="com.example.todoapp.DailyCompletedCount">
+        SELECT DATE(completed_at) AS completed_date, COUNT(*) AS count
+        FROM todos
+        WHERE deleted_at IS NULL
+          AND due_date BETWEEN #{from} AND #{to}
+          AND completed = TRUE
+          AND completed_at IS NOT NULL
+          AND DATE(completed_at) BETWEEN #{from} AND #{to}
+        GROUP BY DATE(completed_at)
+        ORDER BY completed_date
+    </select>
+
+</mapper>

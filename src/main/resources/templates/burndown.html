@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{burndown.title}">バーンダウンチャート</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container burndown-page">
+        <nav class="language-switcher">
+            <a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> |
+            <a href="?lang=en" th:text="#{common.languageEnglish}">English</a>
+        </nav>
+        <h1 class="page-title" th:text="#{burndown.title}">バーンダウンチャート</h1>
+
+        <form class="burndown-controls" method="get" action="/burndown">
+            <label for="sprintId" th:text="#{burndown.sprint}">スプリント</label>
+            <select class="form-input" id="sprintId" name="sprintId" onchange="this.form.submit()">
+                <option value="" th:if="${#lists.isEmpty(sprints)}" th:text="#{burndown.noSprint}">スプリントが登録されていません</option>
+                <option th:each="sprint : ${sprints}"
+                        th:value="${sprint.id}"
+                        th:selected="${selectedSprint != null and sprint.id == selectedSprint.id}"
+                        th:text="|${sprint.name} (${sprint.startDate} - ${sprint.endDate})|"></option>
+            </select>
+        </form>
+
+        <div th:if="${selectedSprint != null}" class="burndown-summary">
+            <span th:text="#{burndown.status}">進捗状況</span>
+            <span class="status-badge"
+                  th:classappend="| status-badge--${status}|"
+                  th:text="${status == 'ahead' ? #messages.msg('burndown.ahead') : (status == 'delayed' ? #messages.msg('burndown.delayed') : #messages.msg('burndown.onTrack'))}">順調</span>
+        </div>
+
+        <p th:if="${selectedSprint == null}" th:text="#{burndown.noSprint}">スプリントが登録されていません</p>
+        <div class="burndown-chart-wrap" th:if="${selectedSprint != null}">
+            <canvas id="burndownChart"></canvas>
+        </div>
+        <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
+    </div>
+
+    <script th:inline="javascript">
+        const labels = /*[[${labels}]]*/ [];
+        const actualValues = /*[[${actualValues}]]*/ [];
+        const idealValues = /*[[${idealValues}]]*/ [];
+        const remainingLabel = /*[[#{burndown.remaining}]]*/ 'Remaining tasks';
+        const idealLabel = /*[[#{burndown.ideal}]]*/ 'Ideal';
+        const actualLabel = /*[[#{burndown.actual}]]*/ 'Actual';
+
+        if (labels.length > 0) {
+            new Chart(document.getElementById('burndownChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: idealLabel,
+                            data: idealValues,
+                            borderColor: '#94a3b8',
+                            borderDash: [6, 6],
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        {
+                            label: actualLabel,
+                            data: actualValues,
+                            borderColor: '#38bdf8',
+                            backgroundColor: '#38bdf8',
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: remainingLabel, color: '#e2e8f0' },
+                            ticks: { color: '#cbd5e1', precision: 0 },
+                            grid: { color: '#334155' }
+                        },
+                        x: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

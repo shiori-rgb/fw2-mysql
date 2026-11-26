@@ -263,3 +263,46 @@ body {
 .attachment-delete {
     display: inline;
 }
+
+.burndown-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.burndown-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: #0f172a;
+    font-weight: bold;
+}
+
+.status-badge--on-track {
+    background: #86efac;
+}
+
+.status-badge--delayed {
+    background: #fca5a5;
+}
+
+.status-badge--ahead {
+    background: #93c5fd;
+}
+
+.burndown-chart-wrap {
+    position: relative;
+    height: 420px;
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid #64748b;
+    background: #111827;
+}

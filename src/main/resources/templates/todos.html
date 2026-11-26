@@ -45,6 +45,7 @@
 
         <a class="btn" href="/todos/new" th:text="#{common.new}">新規登録</a>
         <a class="btn sub" href="/calendar" th:text="#{common.viewMonth}">カレンダーで見る</a>
+        <a class="btn sub" href="/burndown" th:text="#{common.burndown}">バーンダウンチャート</a>
         <a class="btn sub"
            th:href="@{/api/todos.csv(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},trash=${trash})}" th:text="#{common.csv}">CSVで書き出す</a>
         <a class="btn sub" th:if="${trash == 0}" href="/todos?trash=1" th:text="#{common.showDeleted}">削除したものを見る</a>
