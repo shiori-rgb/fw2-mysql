@@ -17,7 +17,7 @@ public class SidebarPageController {
         this.messageSource = messageSource;
     }
 
-    @GetMapping("/settings")
+    @GetMapping("/settings-placeholder")
     public String placeholder(Model model, jakarta.servlet.http.HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String key = "sidebar.settings.title";

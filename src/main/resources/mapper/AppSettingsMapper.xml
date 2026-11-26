@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todoapp.AppSettingsMapper">
+    <select id="find" resultType="com.example.todoapp.AppSettings">
+        SELECT id, initial_screen, default_work_minutes, default_priority, week_start,
+               calendar_start, calendar_end, holidays_enabled, notifications_enabled,
+               task_start_notice_minutes, due_notice_minutes, quiet_start, quiet_end,
+               notification_sound_enabled
+        FROM app_settings WHERE id = 1
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO app_settings
+        (id, initial_screen, default_work_minutes, default_priority, week_start, calendar_start, calendar_end,
+         holidays_enabled, notifications_enabled, task_start_notice_minutes, due_notice_minutes,
+         quiet_start, quiet_end, notification_sound_enabled)
+        VALUES (1, #{initialScreen}, #{defaultWorkMinutes}, #{defaultPriority}, #{weekStart}, #{calendarStart}, #{calendarEnd},
+                #{holidaysEnabled}, #{notificationsEnabled}, #{taskStartNoticeMinutes}, #{dueNoticeMinutes},
+                #{quietStart}, #{quietEnd}, #{notificationSoundEnabled})
+    </insert>
+    <update id="update">
+        UPDATE app_settings SET initial_screen=#{initialScreen}, default_work_minutes=#{defaultWorkMinutes},
+        default_priority=#{defaultPriority}, week_start=#{weekStart}, calendar_start=#{calendarStart}, calendar_end=#{calendarEnd},
+        holidays_enabled=#{holidaysEnabled}, notifications_enabled=#{notificationsEnabled},
+        task_start_notice_minutes=#{taskStartNoticeMinutes}, due_notice_minutes=#{dueNoticeMinutes},
+        quiet_start=#{quietStart}, quiet_end=#{quietEnd}, notification_sound_enabled=#{notificationSoundEnabled}
+        WHERE id=1
+    </update>
+</mapper>

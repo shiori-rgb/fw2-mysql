@@ -24,18 +24,21 @@ public class HomeController {
     private final TodoAttachmentService attachmentService;
     private final MessageSource messageSource;
     private final ProjectService projectService;
+    private final AppSettingsService appSettingsService;
 
     public HomeController(TodoService todoService, TodoAttachmentService attachmentService, MessageSource messageSource,
-            ProjectService projectService) {
+            ProjectService projectService, AppSettingsService appSettingsService) {
         this.todoService = todoService;
         this.attachmentService = attachmentService;
         this.messageSource = messageSource;
         this.projectService = projectService;
+        this.appSettingsService = appSettingsService;
     }
 
     @GetMapping("/")
     public String home(Model model) {
-        return "index";
+        String initialScreen = appSettingsService.get().getInitialScreen();
+        return "/".equals(initialScreen) ? "index" : "redirect:" + initialScreen;
     }
 
     @GetMapping("/todos")

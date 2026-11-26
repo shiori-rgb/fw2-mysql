@@ -28,6 +28,25 @@ CREATE TABLE todos (
     CONSTRAINT chk_todos_priority CHECK (priority IN (1, 2, 3))
 );
 
+CREATE TABLE app_settings (
+    id BIGINT NOT NULL,
+    initial_screen VARCHAR(32) NOT NULL DEFAULT '/',
+    default_work_minutes INT NOT NULL DEFAULT 30,
+    default_priority INT NOT NULL DEFAULT 2,
+    week_start VARCHAR(16) NOT NULL DEFAULT 'monday',
+    calendar_start TIME NOT NULL DEFAULT '08:00:00',
+    calendar_end TIME NOT NULL DEFAULT '20:00:00',
+    holidays_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    notifications_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    task_start_notice_minutes INT NOT NULL DEFAULT 10,
+    due_notice_minutes INT NOT NULL DEFAULT 60,
+    quiet_start TIME NOT NULL DEFAULT '22:00:00',
+    quiet_end TIME NOT NULL DEFAULT '07:00:00',
+    notification_sound_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (id)
+);
+INSERT INTO app_settings (id) VALUES (1);
+
 CREATE TABLE projects (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,

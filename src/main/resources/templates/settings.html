@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{settings.title}">設定</title><link rel="stylesheet" href="/css/style.css">
+</head>
+<body><main class="container settings-page">
+    <h1 class="page-title" th:text="#{settings.title}">設定</h1>
+    <p class="flash" th:if="${settingsSaved}" th:text="#{settings.saved}">設定を保存しました。</p>
+
+    <nav class="settings-sections" aria-label="設定項目">
+        <a class="settings-section-card" href="#general"><span class="settings-section-icon">⚙</span><strong th:text="#{settings.general.title}">一般設定・通知</strong><small th:text="#{settings.general.summary}">アプリの基本動作と通知</small></a>
+        <a class="settings-section-card settings-section-card--planned" href="#integrations"><span class="settings-section-icon">↗</span><strong th:text="#{settings.integrations.title}">外部サービス連携</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
+        <a class="settings-section-card settings-section-card--planned" href="#automation"><span class="settings-section-icon">⚡</span><strong th:text="#{settings.automation.title}">自動化ルール</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
+        <a class="settings-section-card settings-section-card--planned" href="#labs"><span class="settings-section-icon">✦</span><strong th:text="#{settings.labs.title}">実験室（Labs）</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
+        <a class="settings-section-card settings-section-card--planned" href="#data"><span class="settings-section-icon">▣</span><strong th:text="#{settings.data.title}">データ管理</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
+    </nav>
+
+    <section id="general" class="settings-panel">
+        <h2 th:text="#{settings.general.title}">一般設定・通知</h2>
+        <form method="post" action="/settings/general" class="settings-form">
+            <div class="settings-form-grid">
+                <label><span th:text="#{settings.initialScreen}">アプリ起動時の初期表示画面</span><select class="form-input" name="initialScreen"><option value="/" th:selected="${settings.initialScreen == '/'}" th:text="#{settings.screen.home}">ホーム</option><option value="/todos" th:selected="${settings.initialScreen == '/todos'}" th:text="#{settings.screen.todos}">一覧</option><option value="/calendar" th:selected="${settings.initialScreen == '/calendar'}" th:text="#{settings.screen.calendar}">カレンダー</option><option value="/burndown" th:selected="${settings.initialScreen == '/burndown'}" th:text="#{settings.screen.burndown}">バーンダウン</option><option value="/productivity" th:selected="${settings.initialScreen == '/productivity'}" th:text="#{settings.screen.productivity}">生産性分析</option></select></label>
+                <label><span th:text="#{settings.defaultWorkMinutes}">標準作業時間（分）</span><input class="form-input" type="number" min="0" max="1440" name="defaultWorkMinutes" th:value="${settings.defaultWorkMinutes}"></label>
+                <label><span th:text="#{settings.defaultPriority}">初期優先度</span><select class="form-input" name="defaultPriority"><option value="1" th:selected="${settings.defaultPriority == 1}" th:text="#{todo.priority.high}">高</option><option value="2" th:selected="${settings.defaultPriority == 2}" th:text="#{todo.priority.middle}">中</option><option value="3" th:selected="${settings.defaultPriority == 3}" th:text="#{todo.priority.low}">低</option></select></label>
+                <label><span th:text="#{settings.weekStart}">週の開始曜日</span><select class="form-input" name="weekStart"><option value="monday" th:selected="${settings.weekStart == 'monday'}" th:text="#{settings.monday}">月曜日</option><option value="sunday" th:selected="${settings.weekStart == 'sunday'}" th:text="#{settings.sunday}">日曜日</option></select></label>
+                <label><span th:text="#{settings.calendarStart}">カレンダー表示開始時刻</span><input class="form-input" type="time" name="calendarStart" th:value="${settings.calendarStart}"></label>
+                <label><span th:text="#{settings.calendarEnd}">カレンダー表示終了時刻</span><input class="form-input" type="time" name="calendarEnd" th:value="${settings.calendarEnd}"></label>
+            </div>
+            <label class="settings-toggle"><input type="hidden" name="holidaysEnabled" value="false"><input type="checkbox" name="holidaysEnabled" value="true" th:checked="${settings.holidaysEnabled}"><span th:text="#{settings.holidays}">祝日を表示する</span></label>
+            <h3 th:text="#{settings.notifications}">通知</h3>
+            <p class="settings-help" th:text="#{settings.notificationHelp}">通知はブラウザの設定にも左右されます。ブラウザを閉じている場合は通知できません。</p>
+            <label class="settings-toggle"><input type="hidden" name="notificationsEnabled" value="false"><input type="checkbox" name="notificationsEnabled" value="true" th:checked="${settings.notificationsEnabled}"><span th:text="#{settings.notificationsEnabled}">通知を有効にする</span></label>
+            <button class="btn sub" type="button" id="notificationPermission" th:text="#{settings.notificationPermission}">ブラウザ通知を許可</button><span id="notificationStatus" class="settings-help"></span>
+            <div class="settings-form-grid">
+                <label><span th:text="#{settings.startNotice}">タスク開始前（分）</span><input class="form-input" type="number" min="0" name="taskStartNoticeMinutes" th:value="${settings.taskStartNoticeMinutes}"></label>
+                <label><span th:text="#{settings.dueNotice}">期限前（分）</span><input class="form-input" type="number" min="0" name="dueNoticeMinutes" th:value="${settings.dueNoticeMinutes}"></label>
+                <label><span th:text="#{settings.quietStart}">通知停止開始</span><input class="form-input" type="time" name="quietStart" th:value="${settings.quietStart}"></label>
+                <label><span th:text="#{settings.quietEnd}">通知停止終了</span><input class="form-input" type="time" name="quietEnd" th:value="${settings.quietEnd}"></label>
+            </div>
+            <label class="settings-toggle"><input type="hidden" name="notificationSoundEnabled" value="false"><input type="checkbox" name="notificationSoundEnabled" value="true" th:checked="${settings.notificationSoundEnabled}"><span th:text="#{settings.notificationSound}">通知音を有効にする</span></label>
+            <button class="btn" type="submit" th:text="#{common.save}">保存</button>
+        </form>
+    </section>
+    <section th:each="item : ${ {'integrations','automation','labs','data'} }" th:id="${item}" class="settings-panel settings-panel--planned"><h2 th:text="${item == 'integrations' ? #messages.msg('settings.integrations.title') : (item == 'automation' ? #messages.msg('settings.automation.title') : (item == 'labs' ? #messages.msg('settings.labs.title') : #messages.msg('settings.data.title')))}">準備中</h2><p th:text="#{settings.plannedDetail}">この項目は次の段階で実装します。現在は利用できません。</p></section>
+    <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
+</main><script>
+document.getElementById('notificationPermission').addEventListener('click', function () { const s=document.getElementById('notificationStatus'); if (!('Notification' in window)) { s.textContent='このブラウザは通知に対応していません。'; return; } Notification.requestPermission().then(p => { s.textContent=p==='granted'?'ブラウザ通知が許可されました。':'通知は許可されませんでした。アプリはそのまま利用できます。'; }); });
+</script><script src="/js/theme.js" defer></script><script src="/js/sidebar.js" defer></script>
+</body></html>
