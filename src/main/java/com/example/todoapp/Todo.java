@@ -34,6 +34,7 @@ public class Todo {
 
     private Boolean completed;
     private LocalDateTime completedAt;
+    private LocalDateTime deletedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

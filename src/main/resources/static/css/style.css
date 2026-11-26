@@ -128,6 +128,10 @@ body {
     text-decoration: underline;
 }
 
+.todo-table form .link {
+    color: #0f172a;
+}
+
 .pagination {
     position: fixed;
     right: 0;

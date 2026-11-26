@@ -24,14 +24,15 @@
             </select>
             <input type="hidden" name="order" th:value="${order}">
             <input type="hidden" name="page" th:value="${page}">
+            <input type="hidden" name="trash" th:value="${trash}">
             <input type="hidden" name="showCompleted" value="false" id="showCompletedValue">
             <label>
                 <input type="checkbox" id="showCompletedCheckbox" th:checked="${showCompleted}">
                 完了したものも表示する
             </label>
             <button class="btn" type="submit">絞り込む</button>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted},page=${page})}">期限が近い順</a>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted},page=${page})}">期限が遠い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted},page=${page},trash=${trash})}">期限が近い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted},page=${page},trash=${trash})}">期限が遠い順</a>
         </form>
 
         <script>
@@ -43,6 +44,8 @@
 
         <a class="btn" href="/todos/new">新規登録</a>
         <a class="btn sub" href="/calendar">カレンダーで見る</a>
+        <a class="btn sub" th:if="${trash == 0}" href="/todos?trash=1">削除したものを見る</a>
+        <a class="btn sub" th:if="${trash == 1}" href="/todos">通常の一覧に戻る</a>
 
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
 
@@ -73,8 +76,13 @@
                               th:text="| (${#temporals.format(todo.completedAt, 'yyyy-MM-dd HH:mm')})|"></span>
                     </td>
                     <td>
-                        <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
-                        <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
+                        <span th:if="${trash == 0}">
+                            <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
+                            <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
+                        </span>
+                        <form th:if="${trash == 1}" th:action="@{/todos/{id}/restore(id=${todo.id})}" method="post">
+                            <button class="link" type="submit">戻す</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
@@ -83,7 +91,7 @@
             <span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
                 <span th:if="${pageNumber == page}" th:text="${pageNumber}"></span>
                 <a class="link" th:unless="${pageNumber == page}"
-                   th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber})}"
+                   th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber},trash=${trash})}"
                    th:text="${pageNumber}"></a>
             </span>
         </nav>

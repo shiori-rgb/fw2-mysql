@@ -5,7 +5,7 @@
 <mapper namespace="com.example.todoapp.TodoMapper">
 
     <select id="search" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, created_at, updated_at
         FROM todos
         <where>
             <if test="keyword != null and keyword != ''">
@@ -14,7 +14,13 @@
             <if test="category != null and category != ''">
                 AND category = #{category}
             </if>
-            <if test="!showCompleted">
+            <if test="!trash">
+                AND deleted_at IS NULL
+            </if>
+            <if test="trash">
+                AND deleted_at IS NOT NULL
+            </if>
+            <if test="!showCompleted and !trash">
                 AND completed = FALSE
             </if>
             <if test="from != null">
@@ -47,16 +53,23 @@
             <if test="category != null and category != ''">
                 AND category = #{category}
             </if>
-            <if test="!showCompleted">
+            <if test="!trash">
+                AND deleted_at IS NULL
+            </if>
+            <if test="trash">
+                AND deleted_at IS NOT NULL
+            </if>
+            <if test="!showCompleted and !trash">
                 AND completed = FALSE
             </if>
         </where>
     </select>
 
     <select id="findById" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, created_at, updated_at
         FROM todos
         WHERE id = #{id}
+          AND deleted_at IS NULL
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -77,8 +90,17 @@
     </update>
 
     <delete id="deleteById">
-        DELETE FROM todos
+        UPDATE todos
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = #{id}
+          AND deleted_at IS NULL
     </delete>
+
+    <update id="restoreById">
+        UPDATE todos
+        SET deleted_at = NULL
+        WHERE id = #{id}
+          AND deleted_at IS NOT NULL
+    </update>
 
 </mapper>
