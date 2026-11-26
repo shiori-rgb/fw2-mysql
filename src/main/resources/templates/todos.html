@@ -110,6 +110,10 @@
                    th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber},trash=${trash})}"
                    th:text="${pageNumber}"></a>
             </span>
+            <a class="btn sub" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='ja')}"
+               th:text="#{common.languageJapanese}">日本語</a>
+            <a class="btn" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='en')}"
+               th:text="#{common.languageEnglish}">English</a>
         </nav>
     </div>
     <script>
