@@ -116,10 +116,6 @@
                    th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber},trash=${trash})}"
                    th:text="${pageNumber}"></a>
             </span>
-            <a class="language-flag language-flag--ja language-flag--pagination" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='ja')}"
-               title="日本語" aria-label="日本語">🇯🇵</a>
-            <a class="language-flag language-flag--en language-flag--pagination" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='en')}"
-               title="English" aria-label="English">🇬🇧</a>
         </nav>
     </div>
     <script>
@@ -135,5 +131,6 @@
         });
     </script>
     <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
 </body>
 </html>

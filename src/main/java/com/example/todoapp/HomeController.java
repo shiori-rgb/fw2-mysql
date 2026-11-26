@@ -1,6 +1,7 @@
 package com.example.todoapp;
 
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -42,17 +43,46 @@ public class HomeController {
             @RequestParam(name = "showCompleted", defaultValue = "false") boolean showCompleted,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "trash", defaultValue = "0") int trash,
+            @RequestParam(name = "sidebar", defaultValue = "") String sidebar,
             Model model) {
         String selectedCategory = "すべて".equals(category) ? "" : category;
         String selectedOrder = "desc".equals(order) ? "desc" : "asc";
         int pageSize = 10;
         boolean showTrash = trash == 1;
-        int totalCount = todoService.count(keyword, selectedCategory, showCompleted, showTrash);
+        LocalDate from = null;
+        LocalDate to = null;
+        boolean completedOnly = false;
+        LocalDate today = LocalDate.now();
+        switch (sidebar) {
+        case "today" -> from = to = today;
+        case "tomorrow" -> from = to = today.plusDays(1);
+        case "week" -> {
+            from = today.minusDays(today.getDayOfWeek().getValue() % 7);
+            to = from.plusDays(6);
+        }
+        case "upcoming" -> from = today.plusDays(1);
+        case "overdue" -> to = today.minusDays(1);
+        case "completed" -> {
+            showCompleted = true;
+            completedOnly = true;
+        }
+        case "all" -> showCompleted = true;
+        default -> {
+            // 受信トレイやプロジェクトは通常の未完了一覧を表示します。
+        }
+        }
+        if (showTrash) {
+            from = null;
+            to = null;
+            completedOnly = false;
+        }
+        int totalCount = todoService.count(keyword, selectedCategory, from, to, showCompleted, completedOnly,
+                showTrash);
         int totalPages = Math.max(1, (totalCount + pageSize - 1) / pageSize);
         int selectedPage = Math.min(Math.max(page, 1), totalPages);
         int offset = (selectedPage - 1) * pageSize;
-        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder, showCompleted, showTrash,
-                offset, pageSize);
+        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder, from, to, showCompleted,
+                completedOnly, showTrash, offset, pageSize);
         model.addAttribute("todos", todos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", selectedCategory);
@@ -61,6 +91,7 @@ public class HomeController {
         model.addAttribute("page", selectedPage);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("trash", showTrash ? 1 : 0);
+        model.addAttribute("sidebar", sidebar);
         return "todos";
     }
 

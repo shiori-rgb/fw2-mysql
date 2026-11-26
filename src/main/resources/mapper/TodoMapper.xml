@@ -23,6 +23,9 @@
             <if test="!showCompleted and !trash">
                 AND completed = FALSE
             </if>
+            <if test="completedOnly and !trash">
+                AND completed = TRUE
+            </if>
             <if test="from != null">
                 AND due_date &gt;= #{from}
             </if>
@@ -61,6 +64,15 @@
             </if>
             <if test="!showCompleted and !trash">
                 AND completed = FALSE
+            </if>
+            <if test="completedOnly and !trash">
+                AND completed = TRUE
+            </if>
+            <if test="from != null">
+                AND due_date &gt;= #{from}
+            </if>
+            <if test="to != null">
+                AND due_date &lt;= #{to}
             </if>
         </where>
     </select>

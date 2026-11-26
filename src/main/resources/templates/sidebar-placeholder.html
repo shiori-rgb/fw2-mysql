@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">準備中</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title" th:text="${title}">準備中</h1>
+        <p th:text="${description}">この機能は準備中です。</p>
+        <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
+    </div>
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/sidebar.js" defer></script>
+</body>
+</html>
