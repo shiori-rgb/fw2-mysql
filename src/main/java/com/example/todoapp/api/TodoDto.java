@@ -14,6 +14,7 @@ public class TodoDto {
     private Integer priority;
     private LocalDate dueDate;
     private Boolean completed;
+    private LocalDateTime completedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,6 +27,7 @@ public class TodoDto {
         dto.priority = todo.getPriority();
         dto.dueDate = todo.getDueDate();
         dto.completed = todo.getCompleted();
+        dto.completedAt = todo.getCompletedAt();
         dto.createdAt = todo.getCreatedAt();
         dto.updatedAt = todo.getUpdatedAt();
         return dto;
@@ -57,6 +59,10 @@ public class TodoDto {
 
     public Boolean getCompleted() {
         return completed;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
     }
 
     public LocalDateTime getCreatedAt() {

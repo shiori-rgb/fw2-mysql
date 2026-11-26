@@ -6,6 +6,7 @@ CREATE TABLE todos (
     priority INT NOT NULL DEFAULT 2,
     due_date DATE NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
+    completed_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -14,3 +15,9 @@ CREATE TABLE todos (
     ),
     CONSTRAINT chk_todos_priority CHECK (priority IN (1, 2, 3))
 );
+
+UPDATE todos
+SET completed_at = '2026-04-05 00:00:00'
+WHERE completed = TRUE
+ORDER BY id
+LIMIT 1;

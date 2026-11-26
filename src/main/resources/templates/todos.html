@@ -67,7 +67,11 @@
                         <span class="todo-priority-mark" th:if="${todo.priority == 1}" aria-label="最高優先度">★</span>
                     </td>
                     <td th:text="${todo.dueDate}"></td>
-                    <td th:text="${todo.completed ? '完了' : '未完了'}"></td>
+                    <td>
+                        <span th:text="${todo.completed ? '完了' : '未完了'}"></span>
+                        <span th:if="${todo.completed and todo.completedAt != null}"
+                              th:text="| (${#temporals.format(todo.completedAt, 'yyyy-MM-dd HH:mm')})|"></span>
+                    </td>
                     <td>
                         <a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
                         <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
