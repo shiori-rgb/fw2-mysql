@@ -80,6 +80,7 @@ public class TodoService {
             todo.setActualSeconds(existing.getActualSeconds());
             todo.setTimerStartedAt(existing.getTimerStartedAt());
             todo.setTimerStatus(existing.getTimerStatus());
+            todo.setScheduleChangeCount(existing.getScheduleChangeCount());
         }
         int result = todoMapper.update(todo);
         log.info("Todo update completed: id={}", todo.getId());

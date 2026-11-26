@@ -213,6 +213,11 @@
         }
 
         if (document.querySelector('.timeline-board')) loadTimeline(); else loadTodos();
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'todo-schedule-changed') {
+                if (document.querySelector('.timeline-board')) loadTimeline(); else loadTodos();
+            }
+        });
     </script>
     <script src="/js/theme.js" defer></script>
     <script src="/js/sidebar.js" defer></script>

@@ -22,6 +22,7 @@ public class TodoDto {
     private LocalDateTime timerStartedAt;
     private String timerStatus;
     private String projectColor;
+    private Integer scheduleChangeCount;
     private Long projectId;
     private Long sectionId;
     private Boolean completed;
@@ -45,6 +46,7 @@ public class TodoDto {
         dto.timerStartedAt = todo.getTimerStartedAt();
         dto.timerStatus = todo.getTimerStatus();
         dto.projectColor = todo.getProjectColor();
+        dto.scheduleChangeCount = todo.getScheduleChangeCount();
         dto.projectId = todo.getProjectId();
         dto.sectionId = todo.getSectionId();
         dto.completed = todo.getCompleted();
@@ -86,6 +88,7 @@ public class TodoDto {
     public LocalDateTime getTimerStartedAt() { return timerStartedAt; }
     public String getTimerStatus() { return timerStatus; }
     public String getProjectColor() { return projectColor; }
+    public Integer getScheduleChangeCount() { return scheduleChangeCount; }
 
     public Long getProjectId() {
         return projectId;

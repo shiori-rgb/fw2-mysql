@@ -12,6 +12,7 @@ CREATE TABLE todos (
     actual_seconds INT NOT NULL DEFAULT 0,
     timer_started_at DATETIME NULL,
     timer_status VARCHAR(16) NOT NULL DEFAULT 'IDLE',
+    schedule_change_count INT NOT NULL DEFAULT 0,
     project_id BIGINT NULL,
     section_id BIGINT NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,

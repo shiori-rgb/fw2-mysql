@@ -135,6 +135,7 @@ public class TodoApiController {
         }
         todo.setId(id);
         todo.setScheduledDate(request.scheduledDate());
+        todo.setDueDate(request.dueDate());
         todo.setPlannedStartTime(request.plannedStartTime());
         todo.setPlannedEndTime(request.plannedEndTime());
         todo.setPlannedMinutes(request.plannedMinutes());
@@ -160,7 +161,7 @@ public class TodoApiController {
         return ResponseEntity.ok(TodoDto.from(todo));
     }
 
-    public record ScheduleRequest(LocalDate scheduledDate, LocalTime plannedStartTime,
+    public record ScheduleRequest(LocalDate scheduledDate, LocalDate dueDate, LocalTime plannedStartTime,
             LocalTime plannedEndTime, Integer plannedMinutes) {
     }
 

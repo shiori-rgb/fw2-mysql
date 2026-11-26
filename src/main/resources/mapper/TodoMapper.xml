@@ -7,7 +7,7 @@
     <select id="search" resultType="com.example.todoapp.Todo">
         SELECT t.id, t.title, t.detail, t.category, t.priority, t.due_date, t.scheduled_date,
                t.planned_start_time, t.planned_end_time, t.planned_minutes, t.actual_seconds,
-               t.timer_started_at, t.timer_status, t.project_id, t.section_id, t.completed,
+               t.timer_started_at, t.timer_status, t.schedule_change_count, t.project_id, t.section_id, t.completed,
                t.completed_at, t.deleted_at, t.pinned, t.created_at, t.updated_at, p.color AS project_color
         FROM todos t LEFT JOIN projects p ON p.id = t.project_id
         <where>
@@ -72,10 +72,10 @@
                 AND completed = TRUE
             </if>
             <if test="from != null">
-                AND due_date &gt;= #{from}
+                AND (due_date &gt;= #{from} OR scheduled_date &gt;= #{from})
             </if>
             <if test="to != null">
-                AND due_date &lt;= #{to}
+                AND (due_date &lt;= #{to} OR scheduled_date &lt;= #{to})
             </if>
         </where>
     </select>
@@ -83,7 +83,7 @@
     <select id="findById" resultType="com.example.todoapp.Todo">
         SELECT t.id, t.title, t.detail, t.category, t.priority, t.due_date, t.scheduled_date,
                t.planned_start_time, t.planned_end_time, t.planned_minutes, t.actual_seconds,
-               t.timer_started_at, t.timer_status, t.project_id, t.section_id, t.completed,
+               t.timer_started_at, t.timer_status, t.schedule_change_count, t.project_id, t.section_id, t.completed,
                t.completed_at, t.deleted_at, t.pinned, t.created_at, t.updated_at, p.color AS project_color
         FROM todos t LEFT JOIN projects p ON p.id = t.project_id
         WHERE t.id = #{id}
@@ -92,9 +92,9 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO todos (title, detail, category, priority, due_date, scheduled_date, planned_start_time,
-                           planned_end_time, planned_minutes, actual_seconds, timer_status, project_id, section_id, completed)
+                           planned_end_time, planned_minutes, actual_seconds, timer_status, schedule_change_count, project_id, section_id, completed)
         VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate}, #{scheduledDate}, #{plannedStartTime},
-                #{plannedEndTime}, #{plannedMinutes}, COALESCE(#{actualSeconds}, 0), COALESCE(#{timerStatus}, 'IDLE'),
+                #{plannedEndTime}, #{plannedMinutes}, COALESCE(#{actualSeconds}, 0), COALESCE(#{timerStatus}, 'IDLE'), 0,
                 #{projectId}, #{sectionId}, COALESCE(#{completed}, FALSE))
     </insert>
 
@@ -111,6 +111,7 @@
             planned_minutes = #{plannedMinutes},
             actual_seconds = #{actualSeconds},
             timer_status = #{timerStatus},
+            schedule_change_count = #{scheduleChangeCount},
             project_id = #{projectId},
             section_id = #{sectionId},
             completed = #{completed},
@@ -151,9 +152,11 @@
     <update id="updateSchedule">
         UPDATE todos
         SET scheduled_date = #{scheduledDate},
+            due_date = #{dueDate},
             planned_start_time = #{plannedStartTime},
             planned_end_time = #{plannedEndTime},
-            planned_minutes = #{plannedMinutes}
+            planned_minutes = #{plannedMinutes},
+            schedule_change_count = schedule_change_count + 1
         WHERE id = #{id}
           AND deleted_at IS NULL
     </update>

@@ -47,6 +47,7 @@ public class Todo {
     private LocalDateTime timerStartedAt;
     private String timerStatus;
     private String projectColor;
+    private Integer scheduleChangeCount;
 
     private Long projectId;
     private Long sectionId;

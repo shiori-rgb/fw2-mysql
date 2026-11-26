@@ -56,11 +56,27 @@
         <a class="btn sub" th:if="${trash == 0}" href="/todos?trash=1" th:text="#{common.showDeleted}">削除したものを見る</a>
         <a class="btn sub" th:if="${trash == 1}" href="/todos" th:text="#{common.backToNormal}">通常の一覧に戻る</a>
 
+        <div class="quick-schedule-toolbar" th:if="${trash == 0}">
+            <span id="selectedTodoCount">選択中: 0件</span>
+            <select class="form-input" id="bulkScheduleTarget"><option value="scheduled" th:text="#{quickSchedule.scheduledDate}">実行予定日</option><option value="due" th:text="#{todo.dueDate}">期限</option></select>
+            <button class="link quick-schedule-choice" type="button" data-choice="today" th:text="#{quickSchedule.today}">今日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="tomorrow" th:text="#{quickSchedule.tomorrow}">明日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="dayAfterTomorrow" th:text="#{quickSchedule.dayAfterTomorrow}">明後日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="weekend" th:text="#{quickSchedule.weekend}">週末</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="nextWeek" th:text="#{quickSchedule.nextWeek}">来週</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="oneWeek" th:text="#{quickSchedule.oneWeek}">1週間後</button>
+            <input class="form-input" type="date" id="bulkScheduleDate">
+            <button class="link" type="button" id="bulkScheduleCustom" th:text="#{quickSchedule.custom}">任意の日付</button>
+            <button class="link" type="button" id="bulkScheduleNone" th:text="#{quickSchedule.none}">予定日なし</button>
+            <button class="link" type="button" id="undoSchedule" hidden th:text="#{quickSchedule.undo}">取り消す</button>
+        </div>
+
         <p th:if="${#lists.isEmpty(todos)}" th:text="#{common.noTodos}">まだ1件も登録されていません</p>
 
         <table class="todo-table" th:unless="${#lists.isEmpty(todos)}">
             <thead>
                 <tr>
+                    <th th:text="#{quickSchedule.select}">選択</th>
                     <th th:text="#{todo.title}">やること</th>
                     <th th:text="#{todo.category}">ジャンル</th>
                     <th th:text="#{todo.priority}">優先度</th>
@@ -72,7 +88,8 @@
             </thead>
             <tbody>
                 <tr th:each="todo : ${todos}"
-                    th:attr="data-due-date=${todo.dueDate},data-completed=${todo.completed}">
+                    th:attr="data-id=${todo.id},data-due-date=${todo.dueDate},data-scheduled-date=${todo.scheduledDate},data-start-time=${todo.plannedStartTime},data-end-time=${todo.plannedEndTime},data-planned-minutes=${todo.plannedMinutes},data-completed=${todo.completed}">
+                    <td><input class="todo-select" type="checkbox" th:value="${todo.id}"></td>
                     <td>
                         <span th:if="${todo.pinned}">★ </span>
                         <span th:text="${todo.title}"></span>
@@ -82,11 +99,12 @@
                         <span th:text="${todo.priority == 1 ? #messages.msg('todo.priority.high') : (todo.priority == 2 ? #messages.msg('todo.priority.middle') : #messages.msg('todo.priority.low'))}"></span>
                         <span class="todo-priority-mark" th:if="${todo.priority == 1}" th:attr="aria-label=#{todo.priority.highest}">★</span>
                     </td>
-                    <td th:text="${todo.dueDate}"></td>
+                    <td><button class="quick-schedule-trigger" type="button" data-target="due" th:if="${trash == 0}" th:text="${todo.dueDate == null ? #messages.msg('quickSchedule.none') : todo.dueDate}">期限なし</button><span th:if="${trash == 1}" th:text="${todo.dueDate == null ? #messages.msg('quickSchedule.none') : todo.dueDate}"></span></td>
                     <td>
-                        <span th:if="${todo.scheduledDate != null}" th:text="|${todo.scheduledDate} ${todo.plannedStartTime == null ? '' : todo.plannedStartTime}| "></span>
+                        <button class="quick-schedule-trigger" type="button" data-target="scheduled" th:if="${trash == 0}" th:text="${todo.scheduledDate == null ? #messages.msg('quickSchedule.none') : todo.scheduledDate}">予定日なし</button>
+                        <span th:if="${trash == 1}" th:text="${todo.scheduledDate == null ? #messages.msg('quickSchedule.none') : todo.scheduledDate}"></span>
+                        <span th:if="${todo.plannedStartTime != null}" th:text="| ${todo.plannedStartTime}| "></span>
                         <span th:if="${todo.plannedEndTime != null}" th:text="|〜 ${todo.plannedEndTime}| "></span>
-                        <span th:if="${todo.scheduledDate == null}" th:text="#{common.inputNone}"></span>
                     </td>
                     <td>
                         <span th:text="${todo.completed ? #messages.msg('todo.status.completed') : #messages.msg('todo.status.incomplete')}"></span>
@@ -124,6 +142,18 @@
                 </tr>
             </tbody>
         </table>
+        <div id="quickScheduleMenu" class="quick-schedule-menu" hidden>
+            <select class="form-input" id="quickScheduleTarget"><option value="scheduled" th:text="#{quickSchedule.scheduledDate}">実行予定日</option><option value="due" th:text="#{todo.dueDate}">期限</option></select>
+            <button class="link quick-schedule-choice" type="button" data-choice="today" th:text="#{quickSchedule.today}">今日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="tomorrow" th:text="#{quickSchedule.tomorrow}">明日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="dayAfterTomorrow" th:text="#{quickSchedule.dayAfterTomorrow}">明後日</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="weekend" th:text="#{quickSchedule.weekend}">週末</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="nextWeek" th:text="#{quickSchedule.nextWeek}">来週</button>
+            <button class="link quick-schedule-choice" type="button" data-choice="oneWeek" th:text="#{quickSchedule.oneWeek}">1週間後</button>
+            <input class="form-input" type="date" id="quickScheduleDate">
+            <button class="link" type="button" id="quickScheduleCustom" th:text="#{quickSchedule.custom}">任意の日付</button>
+            <button class="link" type="button" id="quickScheduleNone" th:text="#{quickSchedule.none}">予定日なし</button>
+        </div>
         <nav class="pagination" th:if="${totalPages > 1}" aria-label="ページ移動">
             <span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
                 <span th:if="${pageNumber == page}" th:text="${pageNumber}"></span>
@@ -157,6 +187,95 @@
         });
         refreshTimerDisplays();
         setInterval(refreshTimerDisplays, 1000);
+
+        const scheduleMenu = document.querySelector('#quickScheduleMenu');
+        let activeScheduleRows = [];
+        let lastScheduleChanges = null;
+        const noneLabel = document.querySelector('#quickScheduleNone')?.textContent || '予定日なし';
+        const selectedRows = () => [...document.querySelectorAll('.todo-select:checked')]
+            .map((checkbox) => checkbox.closest('tr'));
+        const dateText = (date) => date.toISOString().slice(0, 10);
+        function quickDate(choice) {
+            const date = new Date();
+            date.setHours(12, 0, 0, 0);
+            if (choice === 'tomorrow') date.setDate(date.getDate() + 1);
+            if (choice === 'dayAfterTomorrow') date.setDate(date.getDate() + 2);
+            if (choice === 'oneWeek') date.setDate(date.getDate() + 7);
+            if (choice === 'weekend') date.setDate(date.getDate() + ((6 - date.getDay() + 7) % 7));
+            if (choice === 'nextWeek') date.setDate(date.getDate() + ((7 - date.getDay()) % 7 || 7));
+            return dateText(date);
+        }
+        function rowState(row) {
+            return {
+                scheduledDate: row.dataset.scheduledDate || null,
+                dueDate: row.dataset.dueDate || null,
+                plannedStartTime: row.dataset.startTime || null,
+                plannedEndTime: row.dataset.endTime || null,
+                plannedMinutes: row.dataset.plannedMinutes ? Number(row.dataset.plannedMinutes) : null
+            };
+        }
+        function updateRowDate(row, result) {
+            row.dataset.scheduledDate = result.scheduledDate || '';
+            row.dataset.dueDate = result.dueDate || '';
+            const scheduledButton = row.querySelector('.quick-schedule-trigger[data-target="scheduled"]');
+            const dueButton = row.querySelector('.quick-schedule-trigger[data-target="due"]');
+            if (scheduledButton) scheduledButton.textContent = result.scheduledDate || noneLabel;
+            if (dueButton) dueButton.textContent = result.dueDate || noneLabel;
+        }
+        async function sendSchedule(row, state) {
+            const response = await fetch(`/api/todos/${row.dataset.id}/schedule`, {
+                method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(state)
+            });
+            if (!response.ok) throw new Error('schedule update failed');
+            const result = await response.json();
+            updateRowDate(row, result);
+            return result;
+        }
+        async function applyQuickSchedule(rows, target, date) {
+            if (!rows.length) return;
+            if (target === 'scheduled' && date && rows.some((row) => row.dataset.dueDate && date > row.dataset.dueDate)
+                    && !window.confirm('実行予定日が期限を超えるタスクがあります。変更しますか？')) return;
+            const before = rows.map((row) => ({row, state: rowState(row)}));
+            const states = before.map(({row, state}) => ({row, state: {...state, [target === 'scheduled' ? 'scheduledDate' : 'dueDate']: date}}));
+            try {
+                await Promise.all(states.map(({row, state}) => sendSchedule(row, state)));
+                lastScheduleChanges = before;
+                const undo = document.querySelector('#undoSchedule');
+                if (undo) undo.hidden = false;
+                localStorage.setItem('todo-schedule-changed', String(Date.now()));
+                if (scheduleMenu) scheduleMenu.hidden = true;
+            } catch (error) {
+                window.alert('予定を変更できませんでした。');
+            }
+        }
+        document.querySelectorAll('.todo-select').forEach((checkbox) => checkbox.addEventListener('change', () => {
+            const count = document.querySelectorAll('.todo-select:checked').length;
+            const label = document.querySelector('#selectedTodoCount');
+            if (label) label.textContent = `選択中: ${count}件`;
+        }));
+        document.querySelectorAll('.quick-schedule-trigger').forEach((trigger) => trigger.addEventListener('click', () => {
+            activeScheduleRows = [trigger.closest('tr')];
+            document.querySelector('#quickScheduleTarget').value = trigger.dataset.target;
+            scheduleMenu.hidden = false;
+        }));
+        document.querySelectorAll('.quick-schedule-choice').forEach((button) => button.addEventListener('click', () => {
+            const bulk = button.closest('.quick-schedule-toolbar');
+            const rows = bulk ? selectedRows() : activeScheduleRows;
+            const target = bulk ? document.querySelector('#bulkScheduleTarget').value : document.querySelector('#quickScheduleTarget').value;
+            applyQuickSchedule(rows, target, quickDate(button.dataset.choice));
+        }));
+        document.querySelector('#quickScheduleCustom')?.addEventListener('click', () => applyQuickSchedule(activeScheduleRows, document.querySelector('#quickScheduleTarget').value, document.querySelector('#quickScheduleDate').value || null));
+        document.querySelector('#quickScheduleNone')?.addEventListener('click', () => applyQuickSchedule(activeScheduleRows, document.querySelector('#quickScheduleTarget').value, null));
+        document.querySelector('#bulkScheduleCustom')?.addEventListener('click', () => applyQuickSchedule(selectedRows(), document.querySelector('#bulkScheduleTarget').value, document.querySelector('#bulkScheduleDate').value || null));
+        document.querySelector('#bulkScheduleNone')?.addEventListener('click', () => applyQuickSchedule(selectedRows(), document.querySelector('#bulkScheduleTarget').value, null));
+        document.querySelector('#undoSchedule')?.addEventListener('click', async () => {
+            if (!lastScheduleChanges) return;
+            await Promise.all(lastScheduleChanges.map(({row, state}) => sendSchedule(row, state)));
+            localStorage.setItem('todo-schedule-changed', String(Date.now()));
+            document.querySelector('#undoSchedule').hidden = true;
+            lastScheduleChanges = null;
+        });
 
         const now = new Date();
         const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
