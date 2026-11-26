@@ -42,6 +42,10 @@ body {
     font-weight: bold;
 }
 
+.todo-row--overdue {
+    background: #fee2e2;
+}
+
 .flash {
     margin: 0 0 16px;
     border: 1px solid #cbd5e1;
