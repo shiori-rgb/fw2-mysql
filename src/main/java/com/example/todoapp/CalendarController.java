@@ -17,7 +17,26 @@ public class CalendarController {
     public String calendar(
             @RequestParam(name = "year", required = false) Integer year,
             @RequestParam(name = "month", required = false) Integer month,
+            @RequestParam(name = "view", defaultValue = "month") String view,
+            @RequestParam(name = "date", required = false) LocalDate date,
             Model model) {
+        if ("week".equals(view)) {
+            LocalDate anchor = date == null ? LocalDate.now() : date;
+            LocalDate weekStart = anchor.minusDays(anchor.getDayOfWeek().getValue() % 7);
+            LocalDate weekEnd = weekStart.plusDays(6);
+
+            model.addAttribute("year", weekStart.getYear());
+            model.addAttribute("month", weekStart.getMonthValue());
+            model.addAttribute("from", weekStart);
+            model.addAttribute("to", weekEnd);
+            model.addAttribute("previous", weekStart.minusDays(7));
+            model.addAttribute("next", weekStart.plusDays(7));
+            model.addAttribute("weeks", List.of(createWeek(weekStart)));
+            model.addAttribute("view", "week");
+            model.addAttribute("calendarTitle", weekStart + "〜" + weekEnd);
+            return "calendar";
+        }
+
         YearMonth now = YearMonth.now();
         YearMonth current = YearMonth.of(
                 year == null ? now.getYear() : year,
@@ -32,7 +51,17 @@ public class CalendarController {
         model.addAttribute("previous", current.minusMonths(1));
         model.addAttribute("next", current.plusMonths(1));
         model.addAttribute("weeks", createWeeks(current));
+        model.addAttribute("view", "month");
+        model.addAttribute("calendarTitle", current.getYear() + "年" + current.getMonthValue() + "月");
         return "calendar";
+    }
+
+    private List<CalendarCell> createWeek(LocalDate weekStart) {
+        List<CalendarCell> week = new ArrayList<>();
+        for (int dayIndex = 0; dayIndex < 7; dayIndex++) {
+            week.add(new CalendarCell(weekStart.plusDays(dayIndex)));
+        }
+        return week;
     }
 
     private List<List<CalendarCell>> createWeeks(YearMonth month) {

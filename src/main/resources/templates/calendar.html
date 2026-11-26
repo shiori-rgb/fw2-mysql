@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="|${year}年${month}月|">カレンダー</title>
+    <title th:text="${calendarTitle}">カレンダー</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container calendar-page">
-        <h1 class="page-title" th:text="|${year}年${month}月|">2026年4月</h1>
+        <h1 class="page-title" th:text="${calendarTitle}">カレンダー</h1>
 
         <nav class="calendar-nav" aria-label="月の移動">
             <div class="calendar-nav__left">
-                <a class="btn sub" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue})}">前の月</a>
-                <a class="btn sub" th:href="@{/calendar(year=${next.year},month=${next.monthValue})}">次の月</a>
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue},view='month')}">前の月</a>
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${next.year},month=${next.monthValue},view='month')}">次の月</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${previous})}">前の週</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${next})}">次の週</a>
             </div>
             <div class="calendar-nav__right">
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(view='week',date=${from})}">週で見る</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(year=${year},month=${month},view='month')}">月で見る</a>
                 <a class="btn sub" href="/todos">表で見る</a>
                 <a class="btn" href="/todos/new">新規登録</a>
             </div>
         </nav>
 
-        <table class="calendar-table" th:attr="data-from=${from},data-to=${to}">
+        <table class="calendar-table" th:attr="data-from=${from},data-to=${to},data-todo-limit=${view == 'week' ? 0 : 3}">
             <thead>
                 <tr>
                     <th class="sunday">日</th>
@@ -100,8 +104,9 @@
                 }
 
                 const matchingTodos = todos.filter((todo) => todo.dueDate === date);
-                matchingTodos
-                    .slice(0, 3)
+                const todoLimit = Number(calendar.dataset.todoLimit);
+                const visibleTodos = todoLimit === 0 ? matchingTodos : matchingTodos.slice(0, todoLimit);
+                visibleTodos
                     .forEach((todo) => {
                         const title = document.createElement('div');
                         const link = document.createElement('a');
@@ -115,9 +120,9 @@
                         cell.appendChild(title);
                     });
 
-                if (matchingTodos.length > 3) {
+                if (todoLimit > 0 && matchingTodos.length > todoLimit) {
                     const more = document.createElement('div');
-                    more.textContent = `ほか ${matchingTodos.length - 3}件`;
+                    more.textContent = `ほか ${matchingTodos.length - todoLimit}件`;
                     cell.appendChild(more);
                 }
             });
