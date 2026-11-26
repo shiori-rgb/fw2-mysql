@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todoapp.AutomationRuleMapper">
+    <select id="findAll" resultType="com.example.todoapp.AutomationRule">SELECT * FROM automation_rules ORDER BY enabled DESC, id DESC</select>
+    <select id="findById" resultType="com.example.todoapp.AutomationRule">SELECT * FROM automation_rules WHERE id=#{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO automation_rules (name, condition_type, condition_value, condition_detail, target_project_id,
+        target_category, action_type, action_value, action_detail, enabled)
+        VALUES (#{name},#{conditionType},#{conditionValue},#{conditionDetail},#{targetProjectId},#{targetCategory},#{actionType},#{actionValue},#{actionDetail},COALESCE(#{enabled},FALSE))
+    </insert>
+    <update id="update">UPDATE automation_rules SET name=#{name}, condition_type=#{conditionType}, condition_value=#{conditionValue}, condition_detail=#{conditionDetail}, target_project_id=#{targetProjectId}, target_category=#{targetCategory}, action_type=#{actionType}, action_value=#{actionValue}, action_detail=#{actionDetail}, enabled=#{enabled} WHERE id=#{id}</update>
+    <delete id="deleteById">DELETE FROM automation_rules WHERE id=#{id}</delete>
+    <update id="setEnabled">UPDATE automation_rules SET enabled=#{enabled} WHERE id=#{id}</update>
+    <select id="findRuns" resultType="com.example.todoapp.AutomationRuleRun">SELECT id,rule_id,todo_id,run_key,status,message,executed_at FROM automation_rule_runs WHERE rule_id=#{ruleId} ORDER BY executed_at DESC LIMIT 100</select>
+    <insert id="insertRun">INSERT IGNORE INTO automation_rule_runs (rule_id,todo_id,run_key,status,message) VALUES (#{ruleId},#{todoId},#{runKey},#{status},#{message})</insert>
+    <update id="updateExecution">UPDATE automation_rules SET last_executed_at=CURRENT_TIMESTAMP, execution_count=execution_count+1 WHERE id=#{id}</update>
+    <select id="findActiveTodos" resultType="com.example.todoapp.Todo">SELECT id,title,detail,category,priority,due_date,scheduled_date,planned_start_time,planned_end_time,planned_minutes,actual_seconds,timer_started_at,timer_status,schedule_change_count,project_id,section_id,completed,completed_at,deleted_at,pinned,created_at,updated_at FROM todos WHERE deleted_at IS NULL</select>
+    <update id="updateTodoPriority">UPDATE todos SET priority=#{priority} WHERE id=#{id} AND deleted_at IS NULL</update>
+    <update id="updateTodoCategory">UPDATE todos SET category=#{category} WHERE id=#{id} AND deleted_at IS NULL</update>
+    <update id="updateTodoProject">UPDATE todos SET project_id=#{projectId} WHERE id=#{id} AND deleted_at IS NULL</update>
+    <select id="countUncompleted" resultType="long">SELECT COUNT(*) FROM todos WHERE deleted_at IS NULL AND completed=FALSE</select>
+    <select id="countCompletedToday" resultType="long">SELECT COUNT(*) FROM todos WHERE deleted_at IS NULL AND completed=TRUE AND completed_at &gt;= CURRENT_DATE()</select>
+    <select id="sumActualMinutesToday" resultType="long">SELECT COALESCE(ROUND(SUM(actual_seconds)/60),0) FROM todos WHERE deleted_at IS NULL AND updated_at &gt;= CURRENT_DATE()</select>
+</mapper>

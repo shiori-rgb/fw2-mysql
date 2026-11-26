@@ -78,6 +78,40 @@ ALTER TABLE todos
         FOREIGN KEY (section_id) REFERENCES project_sections(id)
         ON DELETE SET NULL;
 
+CREATE TABLE automation_rules (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    condition_type VARCHAR(64) NOT NULL,
+    condition_value VARCHAR(255) NULL,
+    condition_detail VARCHAR(1000) NULL,
+    target_project_id BIGINT NULL,
+    target_category VARCHAR(255) NULL,
+    action_type VARCHAR(64) NOT NULL,
+    action_value VARCHAR(255) NULL,
+    action_detail VARCHAR(1000) NULL,
+    enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_executed_at DATETIME NULL,
+    execution_count INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_automation_rules_project FOREIGN KEY (target_project_id) REFERENCES projects(id) ON DELETE SET NULL
+);
+
+CREATE TABLE automation_rule_runs (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    rule_id BIGINT NOT NULL,
+    todo_id BIGINT NULL,
+    run_key VARCHAR(255) NOT NULL,
+    status VARCHAR(16) NOT NULL,
+    message VARCHAR(1000) NULL,
+    executed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_automation_rule_runs_key (rule_id, run_key),
+    CONSTRAINT fk_automation_rule_runs_rule FOREIGN KEY (rule_id) REFERENCES automation_rules(id) ON DELETE CASCADE,
+    CONSTRAINT fk_automation_rule_runs_todo FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
+);
+
 CREATE TABLE todo_attachments (
     id BIGINT NOT NULL AUTO_INCREMENT,
     todo_id BIGINT NOT NULL,

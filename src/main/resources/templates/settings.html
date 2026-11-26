@@ -11,7 +11,7 @@
     <nav class="settings-sections" aria-label="設定項目">
         <a class="settings-section-card" href="#general"><span class="settings-section-icon">⚙</span><strong th:text="#{settings.general.title}">一般設定・通知</strong><small th:text="#{settings.general.summary}">アプリの基本動作と通知</small></a>
         <a class="settings-section-card settings-section-card--planned" href="#integrations"><span class="settings-section-icon">↗</span><strong th:text="#{settings.integrations.title}">外部サービス連携</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
-        <a class="settings-section-card settings-section-card--planned" href="#automation"><span class="settings-section-icon">⚡</span><strong th:text="#{settings.automation.title}">自動化ルール</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
+        <a class="settings-section-card" href="/automation"><span class="settings-section-icon">⚡</span><strong th:text="#{settings.automation.title}">自動化ルール</strong><small th:text="#{settings.automation.summary}">条件と処理を自動化</small></a>
         <a class="settings-section-card settings-section-card--planned" href="#labs"><span class="settings-section-icon">✦</span><strong th:text="#{settings.labs.title}">実験室（Labs）</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
         <a class="settings-section-card settings-section-card--planned" href="#data"><span class="settings-section-icon">▣</span><strong th:text="#{settings.data.title}">データ管理</strong><small th:text="#{settings.planned}">段階的に実装予定</small></a>
     </nav>
@@ -42,7 +42,7 @@
             <button class="btn" type="submit" th:text="#{common.save}">保存</button>
         </form>
     </section>
-    <section th:each="item : ${ {'integrations','automation','labs','data'} }" th:id="${item}" class="settings-panel settings-panel--planned"><h2 th:text="${item == 'integrations' ? #messages.msg('settings.integrations.title') : (item == 'automation' ? #messages.msg('settings.automation.title') : (item == 'labs' ? #messages.msg('settings.labs.title') : #messages.msg('settings.data.title')))}">準備中</h2><p th:text="#{settings.plannedDetail}">この項目は次の段階で実装します。現在は利用できません。</p></section>
+    <section th:each="item : ${ {'integrations','labs','data'} }" th:id="${item}" class="settings-panel settings-panel--planned"><h2 th:text="${item == 'integrations' ? #messages.msg('settings.integrations.title') : (item == 'labs' ? #messages.msg('settings.labs.title') : #messages.msg('settings.data.title'))}">準備中</h2><p th:text="#{settings.plannedDetail}">この項目は次の段階で実装します。現在は利用できません。</p></section>
     <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
 </main><script>
 document.getElementById('notificationPermission').addEventListener('click', function () { const s=document.getElementById('notificationStatus'); if (!('Notification' in window)) { s.textContent='このブラウザは通知に対応していません。'; return; } Notification.requestPermission().then(p => { s.textContent=p==='granted'?'ブラウザ通知が許可されました。':'通知は許可されませんでした。アプリはそのまま利用できます。'; }); });

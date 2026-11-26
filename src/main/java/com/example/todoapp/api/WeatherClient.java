@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -59,6 +60,20 @@ public class WeatherClient {
             }
         }
         return new WeatherResult(weather, false);
+    }
+
+    public Optional<Integer> fetchRainProbability(LocalDate date) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3000); requestFactory.setReadTimeout(5000);
+        try {
+            Map<String, Object> response = RestClient.create(new RestTemplate(requestFactory)).get()
+                    .uri(WEATHER_API_URL + "?latitude=" + TOKYO_LATITUDE + "&longitude=" + TOKYO_LONGITUDE
+                            + "&daily=precipitation_probability_max&timezone=Asia/Tokyo&start_date=" + date + "&end_date=" + date)
+                    .retrieve().body(new ParameterizedTypeReference<Map<String, Object>>() { });
+            if (response != null && response.get("daily") instanceof Map<?, ?> daily && daily.get("precipitation_probability_max") instanceof List<?> values
+                    && !values.isEmpty() && values.get(0) instanceof Number value) return Optional.of(value.intValue());
+        } catch (RestClientException ignored) { }
+        return Optional.empty();
     }
 
     private String classify(int code) {
