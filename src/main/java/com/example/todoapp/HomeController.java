@@ -2,6 +2,8 @@ package com.example.todoapp;
 
 import java.util.List;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,15 +21,16 @@ public class HomeController {
 
     private final TodoService todoService;
     private final TodoAttachmentService attachmentService;
+    private final MessageSource messageSource;
 
-    public HomeController(TodoService todoService, TodoAttachmentService attachmentService) {
+    public HomeController(TodoService todoService, TodoAttachmentService attachmentService, MessageSource messageSource) {
         this.todoService = todoService;
         this.attachmentService = attachmentService;
+        this.messageSource = messageSource;
     }
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("title", "やること管理");
         return "index";
     }
 
@@ -82,7 +85,7 @@ public class HomeController {
     @PostMapping("/todos")
     public String insert(@ModelAttribute("todo") Todo todo, RedirectAttributes redirectAttributes) {
         todoService.create(todo);
-        redirectAttributes.addFlashAttribute("message", "登録しました");
+        redirectAttributes.addFlashAttribute("message", message("flash.registered"));
         return "redirect:/todos";
     }
 
@@ -90,7 +93,7 @@ public class HomeController {
     public String edit(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Todo todo = todoService.findById(id);
         if (todo == null) {
-            redirectAttributes.addFlashAttribute("message", "見つかりませんでした");
+            redirectAttributes.addFlashAttribute("message", message("flash.notFound"));
             return "redirect:/todos";
         }
         model.addAttribute("todo", todo);
@@ -120,7 +123,7 @@ public class HomeController {
             RedirectAttributes redirectAttributes) {
         todo.setId(id);
         todoService.update(todo);
-        redirectAttributes.addFlashAttribute("message", "保存しました");
+        redirectAttributes.addFlashAttribute("message", message("flash.saved"));
         return "redirect:/todos";
     }
 
@@ -128,7 +131,7 @@ public class HomeController {
     public String deleteConfirm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Todo todo = todoService.findById(id);
         if (todo == null) {
-            redirectAttributes.addFlashAttribute("message", "見つかりませんでした");
+            redirectAttributes.addFlashAttribute("message", message("flash.notFound"));
             return "redirect:/todos";
         }
         model.addAttribute("todo", todo);
@@ -139,14 +142,14 @@ public class HomeController {
     @PostMapping("/todos/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         todoService.delete(id);
-        redirectAttributes.addFlashAttribute("message", "削除しました");
+        redirectAttributes.addFlashAttribute("message", message("flash.deleted"));
         return "redirect:/todos";
     }
 
     @PostMapping("/todos/{id}/restore")
     public String restore(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         todoService.restore(id);
-        redirectAttributes.addFlashAttribute("message", "戻しました");
+        redirectAttributes.addFlashAttribute("message", message("flash.restored"));
         return "redirect:/todos?trash=1";
     }
 
@@ -168,5 +171,9 @@ public class HomeController {
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("trash", trash);
         return "redirect:/todos";
+    }
+
+    private String message(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

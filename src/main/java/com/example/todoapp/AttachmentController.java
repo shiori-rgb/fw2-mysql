@@ -3,6 +3,8 @@ package com.example.todoapp;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -21,22 +23,25 @@ public class AttachmentController {
 
     private final TodoService todoService;
     private final TodoAttachmentService attachmentService;
+    private final MessageSource messageSource;
 
-    public AttachmentController(TodoService todoService, TodoAttachmentService attachmentService) {
+    public AttachmentController(TodoService todoService, TodoAttachmentService attachmentService,
+            MessageSource messageSource) {
         this.todoService = todoService;
         this.attachmentService = attachmentService;
+        this.messageSource = messageSource;
     }
 
     @PostMapping("/todos/{todoId}/attachments")
     public String upload(@PathVariable Long todoId, @RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) {
         if (todoService.findById(todoId) == null) {
-            redirectAttributes.addFlashAttribute("message", "やることが見つかりません");
+            redirectAttributes.addFlashAttribute("message", message("flash.todoNotFound"));
             return "redirect:/todos";
         }
         try {
             attachmentService.add(todoId, file);
-            redirectAttributes.addFlashAttribute("message", "ファイルを追加しました");
+            redirectAttributes.addFlashAttribute("message", message("flash.fileAdded"));
         } catch (IllegalArgumentException | IllegalStateException exception) {
             redirectAttributes.addFlashAttribute("message", exception.getMessage());
         }
@@ -72,11 +77,15 @@ public class AttachmentController {
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         TodoAttachment attachment = attachmentService.findById(id);
         if (attachment == null) {
-            redirectAttributes.addFlashAttribute("message", "添付ファイルが見つかりません");
+            redirectAttributes.addFlashAttribute("message", message("flash.fileNotFound"));
             return "redirect:/todos";
         }
         attachmentService.delete(id);
-        redirectAttributes.addFlashAttribute("message", "ファイルを削除しました");
+        redirectAttributes.addFlashAttribute("message", message("flash.fileDeleted"));
         return "redirect:/todos/" + attachment.getTodoId() + "/edit";
+    }
+
+    private String message(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

@@ -12,17 +12,17 @@ import lombok.Data;
 @Data
 public class TodoRequest {
 
-    @NotBlank(message = "やることを入力してください")
-    @Size(max = 255, message = "やることは255文字以内で入力してください")
+    @NotBlank(message = "{todo.title.required}")
+    @Size(max = 255, message = "{todo.title.size}")
     private String title;
 
-    @Size(max = 255, message = "メモは255文字以内で入力してください")
+    @Size(max = 255, message = "{todo.detail.size}")
     private String detail;
 
-    @NotBlank(message = "ジャンルを選んでください")
+    @NotBlank(message = "{todo.category.required}")
     private String category;
 
-    @NotNull(message = "優先度を選んでください")
+    @NotNull(message = "{todo.priority.required}")
     private Integer priority;
 
     private LocalDate dueDate;

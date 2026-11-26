@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo</title>
+    <title th:text="#{app.title}">ToDo</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="page-title" th:text="${title}">ToDo</h1>
-        <p>ToDoアプリのトップページです。</p>
+        <nav class="language-switcher"><a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> | <a href="?lang=en" th:text="#{common.languageEnglish}">English</a></nav>
+        <h1 class="page-title" th:text="#{home.title}">やること管理</h1>
+        <p th:text="#{home.description}">ToDoアプリのトップページです。</p>
     </div>
 </body>
 </html>
