@@ -65,6 +65,7 @@
                     <th th:text="#{todo.category}">ジャンル</th>
                     <th th:text="#{todo.priority}">優先度</th>
                     <th th:text="#{todo.dueDate}">期限</th>
+                    <th th:text="#{timeBlock.title}">タイムブロック</th>
                     <th th:text="#{todo.completed}">状態</th>
                     <th th:text="#{common.filter}">操作</th>
                 </tr>
@@ -83,12 +84,26 @@
                     </td>
                     <td th:text="${todo.dueDate}"></td>
                     <td>
+                        <span th:if="${todo.scheduledDate != null}" th:text="|${todo.scheduledDate} ${todo.plannedStartTime == null ? '' : todo.plannedStartTime}| "></span>
+                        <span th:if="${todo.plannedEndTime != null}" th:text="|〜 ${todo.plannedEndTime}| "></span>
+                        <span th:if="${todo.scheduledDate == null}" th:text="#{common.inputNone}"></span>
+                    </td>
+                    <td>
                         <span th:text="${todo.completed ? #messages.msg('todo.status.completed') : #messages.msg('todo.status.incomplete')}"></span>
                         <span th:if="${todo.completed and todo.completedAt != null}"
                               th:text="| (${#temporals.format(todo.completedAt, 'yyyy-MM-dd HH:mm')})|"></span>
                     </td>
                     <td>
                         <div th:if="${trash == 0}">
+                            <div class="timer-controls" th:attr="data-todo-id=${todo.id},data-status=${todo.timerStatus},data-started-at=${todo.timerStartedAt},data-actual-seconds=${todo.actualSeconds}">
+                                <button class="link timer-button" type="button" data-action="start" th:if="${todo.timerStatus == null or todo.timerStatus == 'IDLE' or todo.timerStatus == 'STOPPED'}" th:text="#{timeBlock.start}">開始</button>
+                                <button class="link timer-button" type="button" data-action="pause" th:if="${todo.timerStatus == 'RUNNING'}" th:text="#{timeBlock.pause}">一時停止</button>
+                                <button class="link timer-button" type="button" data-action="resume" th:if="${todo.timerStatus == 'PAUSED'}" th:text="#{timeBlock.resume}">再開</button>
+                                <button class="link timer-button" type="button" data-action="stop" th:if="${todo.timerStatus == 'RUNNING' or todo.timerStatus == 'PAUSED'}" th:text="#{timeBlock.stop}">終了</button>
+                                <span th:text="#{timeBlock.actual}">実績</span>
+                                <span class="timer-actual" th:text="${todo.actualSeconds == null ? 0 : todo.actualSeconds}">0:00:00</span>
+                                <span th:if="${todo.plannedMinutes != null}" th:text="| / ${todo.plannedMinutes} #{timeBlock.minutes}|"> / 30 分</span>
+                            </div>
                             <form th:action="@{/todos/{id}/pin(id=${todo.id})}" method="post">
                                 <input type="hidden" name="keyword" th:value="${keyword}">
                                 <input type="hidden" name="category" th:value="${category}">
@@ -119,6 +134,30 @@
         </nav>
     </div>
     <script>
+        function formatSeconds(value) {
+            const seconds = Math.max(0, Math.floor(value));
+            return `${Math.floor(seconds / 3600)}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+        }
+        function refreshTimerDisplays() {
+            document.querySelectorAll('.timer-controls').forEach((control) => {
+                let seconds = Number(control.dataset.actualSeconds || 0);
+                if (control.dataset.status === 'RUNNING' && control.dataset.startedAt) {
+                    seconds += Math.max(0, (Date.now() - new Date(control.dataset.startedAt).getTime()) / 1000);
+                }
+                const display = control.querySelector('.timer-actual');
+                if (display) display.textContent = formatSeconds(seconds);
+            });
+        }
+        document.querySelectorAll('.timer-button').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const control = button.closest('.timer-controls');
+                const response = await fetch(`/api/todos/${control.dataset.todoId}/timer/${button.dataset.action}`, { method: 'POST' });
+                if (response.ok) window.location.reload();
+            });
+        });
+        refreshTimerDisplays();
+        setInterval(refreshTimerDisplays, 1000);
+
         const now = new Date();
         const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 

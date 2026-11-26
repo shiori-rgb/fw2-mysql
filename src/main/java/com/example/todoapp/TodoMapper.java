@@ -30,4 +30,8 @@ public interface TodoMapper {
     int restoreById(Long id);
 
     int togglePinned(Long id);
+
+    int updateTimer(Todo todo);
+
+    int updateSchedule(Todo todo);
 }

@@ -1,6 +1,7 @@
 package com.example.todoapp.api;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.example.todoapp.Todo;
 
@@ -27,6 +28,13 @@ public class TodoRequest {
 
     private LocalDate dueDate;
 
+    private LocalDate scheduledDate;
+    private LocalTime plannedStartTime;
+    private LocalTime plannedEndTime;
+    private Integer plannedMinutes;
+    private Integer actualSeconds;
+    private String timerStatus;
+
     private Long projectId;
 
     private Long sectionId;
@@ -40,6 +48,12 @@ public class TodoRequest {
         todo.setCategory(category);
         todo.setPriority(priority);
         todo.setDueDate(dueDate);
+        todo.setScheduledDate(scheduledDate);
+        todo.setPlannedStartTime(plannedStartTime);
+        todo.setPlannedEndTime(plannedEndTime);
+        todo.setPlannedMinutes(plannedMinutes);
+        todo.setActualSeconds(actualSeconds);
+        todo.setTimerStatus(timerStatus);
         todo.setProjectId(projectId);
         todo.setSectionId(sectionId);
         todo.setCompleted(completed);

@@ -20,17 +20,38 @@
                 <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${next.year},month=${next.monthValue},view='month')}" th:text="#{common.nextMonth}">次の月</a>
                 <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${previous})}" th:text="#{common.previousWeek}">前の週</a>
                 <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${next})}" th:text="#{common.nextWeek}">次の週</a>
+                <a class="btn sub" th:if="${view == 'day'}" th:href="@{/calendar(view='day',date=${previous})}" th:text="#{common.previous}">前へ</a>
+                <a class="btn sub" th:if="${view == 'day'}" th:href="@{/calendar(view='day',date=${next})}" th:text="#{common.next}">次へ</a>
             </div>
             <div class="calendar-nav__right">
                 <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(view='week',date=${from})}" th:text="#{common.viewWeek}">週で見る</a>
                 <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(year=${year},month=${month},view='month')}" th:text="#{common.viewMonth}">月で見る</a>
+                <a class="btn sub" th:if="${view != 'day'}" th:href="@{/calendar(view='day',date=${from})}" th:text="#{common.viewDay}">日で見る</a>
+                <a class="btn sub" th:if="${view == 'day'}" th:href="@{/calendar(view='week',date=${from})}" th:text="#{common.viewWeek}">週で見る</a>
+                <a class="btn sub" th:if="${view == 'day'}" th:href="@{/calendar(year=${year},month=${month},view='month')}" th:text="#{common.viewMonth}">月で見る</a>
                 <a class="btn sub" href="/todos" th:text="#{common.tableView}">表で見る</a>
                 <a class="btn sub" href="/burndown" th:text="#{common.burndown}">バーンダウンチャート</a>
                 <a class="btn" href="/todos/new" th:text="#{common.new}">新規登録</a>
             </div>
         </nav>
 
-        <table class="calendar-table" th:attr="data-from=${from},data-to=${to},data-todo-limit=${view == 'week' ? 0 : 3},data-holiday-error=#{calendar.holidayFetchFailed},data-sunny-label=#{weather.sunny},data-cloudy-label=#{weather.cloudy},data-rainy-label=#{weather.rainy}">
+        <div class="timeline-board" th:if="${timeline}" th:style="|--timeline-days:${#lists.size(timelineDates)}|" th:attr="data-from=${from},data-to=${to},data-view=${timelineView}">
+            <div class="timeline-header">
+                <div class="timeline-time-label"></div>
+                <div class="timeline-date-label" th:each="date : ${timelineDates}" th:text="${date}">2026-11-26</div>
+            </div>
+            <div class="timeline-row" th:each="hour : ${timeSlots}">
+                <div class="timeline-time-label" th:text="|${hour}:00|">9:00</div>
+                <div class="timeline-slot" th:each="date : ${timelineDates}" th:attr="data-date=${date},data-hour=${hour}"></div>
+            </div>
+            <div class="timeline-now-line"></div>
+            <div class="timeline-unscheduled">
+                <h2 th:text="#{timeBlock.unscheduled}">時間未設定</h2>
+                <div class="timeline-unscheduled-list"></div>
+            </div>
+        </div>
+
+        <table class="calendar-table" th:unless="${timeline}" th:attr="data-from=${from},data-to=${to},data-todo-limit=${view == 'week' ? 0 : 3},data-holiday-error=#{calendar.holidayFetchFailed},data-sunny-label=#{weather.sunny},data-cloudy-label=#{weather.cloudy},data-rainy-label=#{weather.rainy}">
             <thead>
                 <tr>
                     <th class="sunday">日</th>
@@ -56,6 +77,64 @@
         </table>
     </div>
     <script>
+        async function loadTimeline() {
+            const board = document.querySelector('.timeline-board');
+            const todos = await (await fetch(`/api/todos?from=${board.dataset.from}&to=${board.dataset.to}`)).json();
+            const dates = [...document.querySelectorAll('.timeline-date-label')].map((element) => element.textContent);
+            const slots = [...document.querySelectorAll('.timeline-slot')];
+            const scheduled = todos.filter((todo) => todo.scheduledDate && todo.plannedStartTime && todo.plannedEndTime);
+            const unscheduled = todos.filter((todo) => !todo.scheduledDate || !todo.plannedStartTime || !todo.plannedEndTime);
+            const minutes = (time) => { const parts = time.split(':'); return Number(parts[0]) * 60 + Number(parts[1]); };
+            const updateSchedule = async (id, date, startMinutes, endMinutes) => {
+                const toTime = (value) => `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(value % 60).padStart(2, '0')}`;
+                await fetch(`/api/todos/${id}/schedule`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({scheduledDate: date, plannedStartTime: toTime(startMinutes), plannedEndTime: toTime(endMinutes), plannedMinutes: endMinutes - startMinutes}) });
+                window.location.reload();
+            };
+            const addBlock = (todo) => {
+                const start = minutes(todo.plannedStartTime);
+                const end = minutes(todo.plannedEndTime);
+                const slot = slots.find((candidate) => candidate.dataset.date === todo.scheduledDate && Number(candidate.dataset.hour) === Math.floor(start / 60));
+                if (!slot) return;
+                const block = document.createElement('div');
+                block.className = 'time-block';
+                block.draggable = true;
+                block.dataset.todoId = todo.id;
+                block.dataset.start = start;
+                block.dataset.end = end;
+                block.style.marginTop = `${(start % 60) * 1.2}px`;
+                block.style.height = `${Math.max(28, (end - start) * 1.2)}px`;
+                if (todo.projectColor) block.style.borderLeftColor = todo.projectColor;
+                block.textContent = `${todo.plannedStartTime.slice(0, 5)} ${todo.title}`;
+                const handle = document.createElement('span');
+                handle.className = 'time-block-resize';
+                block.appendChild(handle);
+                block.addEventListener('dragstart', (event) => event.dataTransfer.setData('text/plain', todo.id));
+                handle.addEventListener('mousedown', (event) => {
+                    event.stopPropagation();
+                    const startY = event.clientY;
+                    const originalEnd = end;
+                    const move = (moveEvent) => { block.style.height = `${Math.max(28, (originalEnd - start + Math.round((moveEvent.clientY - startY) / 1.2)) * 1.2)}px`; };
+                    const up = async (upEvent) => { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); const newEnd = Math.max(start + 15, originalEnd + Math.round((upEvent.clientY - startY) / 1.2)); await updateSchedule(todo.id, todo.scheduledDate, start, Math.min(1440, newEnd)); };
+                    document.addEventListener('mousemove', move); document.addEventListener('mouseup', up);
+                });
+                slot.appendChild(block);
+            };
+            slots.forEach((slot) => slot.addEventListener('dragover', (event) => event.preventDefault()));
+            slots.forEach((slot) => slot.addEventListener('drop', async (event) => {
+                event.preventDefault();
+                const todo = todos.find((item) => String(item.id) === event.dataTransfer.getData('text/plain'));
+                if (!todo) return;
+                const duration = minutes(todo.plannedEndTime) - minutes(todo.plannedStartTime);
+                const start = Number(slot.dataset.hour) * 60;
+                await updateSchedule(todo.id, slot.dataset.date, start, Math.min(1440, start + duration));
+            }));
+            scheduled.forEach(addBlock);
+            unscheduled.forEach((todo) => { const item = document.createElement('a'); item.className = 'timeline-unscheduled-item'; item.href = `/todos/${todo.id}/edit`; item.textContent = todo.title; document.querySelector('.timeline-unscheduled-list').appendChild(item); });
+            const now = new Date();
+            if (dates.includes(now.toISOString().slice(0, 10))) document.querySelector('.timeline-now-line').style.top = `${48 + (now.getHours() * 60 + now.getMinutes()) * 1.2}px`;
+            for (let i = 0; i < scheduled.length; i++) for (let j = i + 1; j < scheduled.length; j++) if (scheduled[i].scheduledDate === scheduled[j].scheduledDate && minutes(scheduled[i].plannedStartTime) < minutes(scheduled[j].plannedEndTime) && minutes(scheduled[j].plannedStartTime) < minutes(scheduled[i].plannedEndTime)) document.querySelectorAll(`[data-todo-id="${scheduled[i].id}"], [data-todo-id="${scheduled[j].id}"]`).forEach((block) => block.classList.add('time-block--overlap'));
+        }
+
         async function loadTodos() {
             const calendar = document.querySelector('.calendar-table');
             const from = calendar.dataset.from;
@@ -108,7 +187,7 @@
                     cell.appendChild(weatherMark);
                 }
 
-                const matchingTodos = todos.filter((todo) => todo.dueDate === date);
+                const matchingTodos = todos.filter((todo) => todo.dueDate === date || (todo.dueDate == null && todo.scheduledDate === date));
                 const todoLimit = Number(calendar.dataset.todoLimit);
                 const visibleTodos = todoLimit === 0 ? matchingTodos : matchingTodos.slice(0, todoLimit);
                 visibleTodos
@@ -133,7 +212,7 @@
             });
         }
 
-        loadTodos();
+        if (document.querySelector('.timeline-board')) loadTimeline(); else loadTodos();
     </script>
     <script src="/js/theme.js" defer></script>
     <script src="/js/sidebar.js" defer></script>

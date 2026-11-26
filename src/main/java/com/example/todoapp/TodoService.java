@@ -2,6 +2,7 @@ package com.example.todoapp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +76,11 @@ public class TodoService {
         } else if (existing != null) {
             todo.setCompletedAt(existing.getCompletedAt());
         }
+        if (existing != null) {
+            todo.setActualSeconds(existing.getActualSeconds());
+            todo.setTimerStartedAt(existing.getTimerStartedAt());
+            todo.setTimerStatus(existing.getTimerStatus());
+        }
         int result = todoMapper.update(todo);
         log.info("Todo update completed: id={}", todo.getId());
         return result;
@@ -96,5 +102,52 @@ public class TodoService {
         int result = todoMapper.togglePinned(id);
         log.info("Todo pin toggled: id={}", id);
         return result;
+    }
+
+    public Todo startTimer(Long id) {
+        Todo todo = requireTodo(id);
+        todo.setTimerStatus("RUNNING");
+        todo.setTimerStartedAt(LocalDateTime.now());
+        todoMapper.updateTimer(todo);
+        return findById(id);
+    }
+
+    public Todo pauseTimer(Long id) {
+        Todo todo = requireTodo(id);
+        accumulateRunningTime(todo);
+        todo.setTimerStatus("PAUSED");
+        todo.setTimerStartedAt(null);
+        todoMapper.updateTimer(todo);
+        return findById(id);
+    }
+
+    public Todo stopTimer(Long id) {
+        Todo todo = requireTodo(id);
+        accumulateRunningTime(todo);
+        todo.setTimerStatus("STOPPED");
+        todo.setTimerStartedAt(null);
+        todoMapper.updateTimer(todo);
+        return findById(id);
+    }
+
+    public Todo updateSchedule(Todo todo) {
+        todoMapper.updateSchedule(todo);
+        return findById(todo.getId());
+    }
+
+    private Todo requireTodo(Long id) {
+        Todo todo = findById(id);
+        if (todo == null) {
+            throw new IllegalArgumentException("Todo not found: " + id);
+        }
+        return todo;
+    }
+
+    private void accumulateRunningTime(Todo todo) {
+        int seconds = todo.getActualSeconds() == null ? 0 : todo.getActualSeconds();
+        if ("RUNNING".equals(todo.getTimerStatus()) && todo.getTimerStartedAt() != null) {
+            seconds += (int) Math.max(0, Duration.between(todo.getTimerStartedAt(), LocalDateTime.now()).toSeconds());
+        }
+        todo.setActualSeconds(seconds);
     }
 }

@@ -883,6 +883,125 @@ body.sidebar-collapsed .container {
     font-weight: bold;
 }
 
+.time-block-form {
+    border-top: 1px solid var(--theme-border);
+    padding-top: 16px;
+}
+
+.timer-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    white-space: nowrap;
+}
+
+.timer-actual {
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-muted);
+}
+
+.timeline-board {
+    position: relative;
+    overflow-x: auto;
+    min-width: 720px;
+    margin-top: 20px;
+    border: 1px solid var(--theme-border);
+    background: var(--theme-card-bg);
+}
+
+.timeline-header,
+.timeline-row {
+    display: grid;
+    grid-template-columns: 70px repeat(var(--timeline-days, 1), minmax(150px, 1fr));
+    min-height: 72px;
+}
+
+.timeline-date-label,
+.timeline-time-label,
+.timeline-slot {
+    border-right: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
+    padding: 6px;
+}
+
+.timeline-date-label {
+    background: var(--theme-table-header);
+    color: var(--theme-text);
+    font-weight: 700;
+}
+
+.timeline-time-label {
+    color: var(--theme-muted);
+    font-size: 12px;
+    text-align: right;
+}
+
+.timeline-slot {
+    position: relative;
+    min-height: 72px;
+}
+
+.time-block {
+    position: relative;
+    z-index: 2;
+    min-height: 28px;
+    margin: -1px 3px 0;
+    padding: 5px 8px;
+    overflow: hidden;
+    border: 1px solid var(--theme-main);
+    border-left: 5px solid var(--theme-main);
+    border-radius: 5px;
+    background: var(--theme-sub);
+    color: var(--theme-text);
+    cursor: grab;
+    font-size: 13px;
+}
+
+.time-block--overlap {
+    border-color: #d64b4b;
+    background: color-mix(in srgb, #d64b4b 20%, var(--theme-card-bg));
+}
+
+.time-block-resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 7px;
+    cursor: ns-resize;
+}
+
+.timeline-now-line {
+    position: absolute;
+    z-index: 3;
+    top: 48px;
+    right: 0;
+    left: 70px;
+    height: 2px;
+    background: #d64b4b;
+    pointer-events: none;
+}
+
+.timeline-unscheduled {
+    padding: 14px;
+    border-top: 2px solid var(--theme-border);
+}
+
+.timeline-unscheduled-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.timeline-unscheduled-item {
+    padding: 6px 10px;
+    border: 1px solid var(--theme-border);
+    border-radius: 5px;
+    background: var(--theme-table-header);
+    color: var(--theme-text);
+}
+
 @media (max-width: 600px) {
     .theme-picker {
         top: 8px;

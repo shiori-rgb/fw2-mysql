@@ -74,6 +74,18 @@
                 <input class="form-input" type="date" id="dueDate" th:field="*{dueDate}">
             </div>
 
+            <div class="form-row time-block-form">
+                <h2 th:text="#{timeBlock.title}">タイムブロック</h2>
+                <label class="form-label" for="scheduledDate" th:text="#{timeBlock.scheduledDate}">実行予定日</label>
+                <input class="form-input" type="date" id="scheduledDate" th:field="*{scheduledDate}">
+                <label class="form-label" for="plannedStartTime" th:text="#{timeBlock.startTime}">開始予定時間</label>
+                <input class="form-input" type="time" id="plannedStartTime" th:field="*{plannedStartTime}">
+                <label class="form-label" for="plannedEndTime" th:text="#{timeBlock.endTime}">終了予定時間</label>
+                <input class="form-input" type="time" id="plannedEndTime" th:field="*{plannedEndTime}">
+                <label class="form-label" for="plannedMinutes" th:text="#{timeBlock.plannedMinutes}">予定作業時間（分）</label>
+                <input class="form-input" type="number" min="0" id="plannedMinutes" th:field="*{plannedMinutes}">
+            </div>
+
             <button class="btn" type="submit" th:text="#{common.confirm}">確認する</button>
             <a class="btn sub" href="/todos" th:text="#{common.backToList}">一覧へ</a>
         </form>

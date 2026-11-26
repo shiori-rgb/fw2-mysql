@@ -1,6 +1,7 @@
 package com.example.todoapp.api;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -124,6 +125,43 @@ public class TodoApiController {
         todo.setId(id);
         todoService.update(todo);
         return ResponseEntity.ok(TodoDto.from(todoService.findById(id)));
+    }
+
+    @PutMapping("/api/todos/{id}/schedule")
+    public ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequest request) {
+        Todo todo = todoService.findById(id);
+        if (todo == null) {
+            return notFound(id);
+        }
+        todo.setId(id);
+        todo.setScheduledDate(request.scheduledDate());
+        todo.setPlannedStartTime(request.plannedStartTime());
+        todo.setPlannedEndTime(request.plannedEndTime());
+        todo.setPlannedMinutes(request.plannedMinutes());
+        return ResponseEntity.ok(TodoDto.from(todoService.updateSchedule(todo)));
+    }
+
+    @PostMapping("/api/todos/{id}/timer/{action}")
+    public ResponseEntity<?> timer(@PathVariable Long id, @PathVariable String action) {
+        Todo todo;
+        try {
+            todo = switch (action) {
+            case "start", "resume" -> todoService.startTimer(id);
+            case "pause" -> todoService.pauseTimer(id);
+            case "stop" -> todoService.stopTimer(id);
+            default -> null;
+            };
+        } catch (IllegalArgumentException exception) {
+            return notFound(id);
+        }
+        if (todo == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Unknown timer action"));
+        }
+        return ResponseEntity.ok(TodoDto.from(todo));
+    }
+
+    public record ScheduleRequest(LocalDate scheduledDate, LocalTime plannedStartTime,
+            LocalTime plannedEndTime, Integer plannedMinutes) {
     }
 
     @DeleteMapping("/api/todos/{id}")

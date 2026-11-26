@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,16 @@ public class CalendarController {
             @RequestParam(name = "view", defaultValue = "month") String view,
             @RequestParam(name = "date", required = false) LocalDate date,
             Model model) {
+        if ("day".equals(view)) {
+            LocalDate selected = date == null ? LocalDate.now() : date;
+            model.addAttribute("year", selected.getYear());
+            model.addAttribute("month", selected.getMonthValue());
+            addTimelineModel(model, selected, selected, "day");
+            model.addAttribute("previous", selected.minusDays(1));
+            model.addAttribute("next", selected.plusDays(1));
+            model.addAttribute("calendarTitle", selected.toString());
+            return "calendar";
+        }
         if ("week".equals(view)) {
             LocalDate anchor = date == null ? LocalDate.now() : date;
             LocalDate weekStart = anchor.minusDays(anchor.getDayOfWeek().getValue() % 7);
@@ -32,6 +43,7 @@ public class CalendarController {
             model.addAttribute("previous", weekStart.minusDays(7));
             model.addAttribute("next", weekStart.plusDays(7));
             model.addAttribute("weeks", List.of(createWeek(weekStart)));
+            addTimelineModel(model, weekStart, weekEnd, "week");
             model.addAttribute("view", "week");
             model.addAttribute("calendarTitle", weekStart + "〜" + weekEnd);
             return "calendar";
@@ -54,6 +66,14 @@ public class CalendarController {
         model.addAttribute("view", "month");
         model.addAttribute("calendarTitle", current.getYear() + "年" + current.getMonthValue() + "月");
         return "calendar";
+    }
+
+    private void addTimelineModel(Model model, LocalDate from, LocalDate to, String view) {
+        model.addAttribute("timelineDates", IntStream.range(0, (int) (to.toEpochDay() - from.toEpochDay() + 1))
+                .mapToObj(from::plusDays).toList());
+        model.addAttribute("timeSlots", IntStream.range(0, 24).boxed().toList());
+        model.addAttribute("timeline", true);
+        model.addAttribute("timelineView", view);
     }
 
     private List<CalendarCell> createWeek(LocalDate weekStart) {

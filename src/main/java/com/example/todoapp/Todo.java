@@ -2,6 +2,7 @@ package com.example.todoapp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,6 +32,21 @@ public class Todo {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate scheduledDate;
+
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime plannedStartTime;
+
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime plannedEndTime;
+
+    private Integer plannedMinutes;
+    private Integer actualSeconds;
+    private LocalDateTime timerStartedAt;
+    private String timerStatus;
+    private String projectColor;
 
     private Long projectId;
     private Long sectionId;

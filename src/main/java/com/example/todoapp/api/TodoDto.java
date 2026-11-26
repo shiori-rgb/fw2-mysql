@@ -2,6 +2,7 @@ package com.example.todoapp.api;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.example.todoapp.Todo;
 
@@ -13,6 +14,14 @@ public class TodoDto {
     private String category;
     private Integer priority;
     private LocalDate dueDate;
+    private LocalDate scheduledDate;
+    private LocalTime plannedStartTime;
+    private LocalTime plannedEndTime;
+    private Integer plannedMinutes;
+    private Integer actualSeconds;
+    private LocalDateTime timerStartedAt;
+    private String timerStatus;
+    private String projectColor;
     private Long projectId;
     private Long sectionId;
     private Boolean completed;
@@ -28,6 +37,14 @@ public class TodoDto {
         dto.category = todo.getCategory();
         dto.priority = todo.getPriority();
         dto.dueDate = todo.getDueDate();
+        dto.scheduledDate = todo.getScheduledDate();
+        dto.plannedStartTime = todo.getPlannedStartTime();
+        dto.plannedEndTime = todo.getPlannedEndTime();
+        dto.plannedMinutes = todo.getPlannedMinutes();
+        dto.actualSeconds = todo.getActualSeconds();
+        dto.timerStartedAt = todo.getTimerStartedAt();
+        dto.timerStatus = todo.getTimerStatus();
+        dto.projectColor = todo.getProjectColor();
         dto.projectId = todo.getProjectId();
         dto.sectionId = todo.getSectionId();
         dto.completed = todo.getCompleted();
@@ -60,6 +77,15 @@ public class TodoDto {
     public LocalDate getDueDate() {
         return dueDate;
     }
+
+    public LocalDate getScheduledDate() { return scheduledDate; }
+    public LocalTime getPlannedStartTime() { return plannedStartTime; }
+    public LocalTime getPlannedEndTime() { return plannedEndTime; }
+    public Integer getPlannedMinutes() { return plannedMinutes; }
+    public Integer getActualSeconds() { return actualSeconds; }
+    public LocalDateTime getTimerStartedAt() { return timerStartedAt; }
+    public String getTimerStatus() { return timerStatus; }
+    public String getProjectColor() { return projectColor; }
 
     public Long getProjectId() {
         return projectId;
