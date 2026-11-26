@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +8,25 @@
 </head>
 <body>
     <div class="container calendar-page">
+        <nav class="language-switcher"><a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> | <a href="?lang=en" th:text="#{common.languageEnglish}">English</a></nav>
         <h1 class="page-title" th:text="${calendarTitle}">カレンダー</h1>
 
-        <nav class="calendar-nav" aria-label="月の移動">
+        <nav class="calendar-nav" th:attr="aria-label=#{calendar.navigation}">
             <div class="calendar-nav__left">
-                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue},view='month')}">前の月</a>
-                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${next.year},month=${next.monthValue},view='month')}">次の月</a>
-                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${previous})}">前の週</a>
-                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${next})}">次の週</a>
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${previous.year},month=${previous.monthValue},view='month')}" th:text="#{common.previousMonth}">前の月</a>
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(year=${next.year},month=${next.monthValue},view='month')}" th:text="#{common.nextMonth}">次の月</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${previous})}" th:text="#{common.previousWeek}">前の週</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(view='week',date=${next})}" th:text="#{common.nextWeek}">次の週</a>
             </div>
             <div class="calendar-nav__right">
-                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(view='week',date=${from})}">週で見る</a>
-                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(year=${year},month=${month},view='month')}">月で見る</a>
-                <a class="btn sub" href="/todos">表で見る</a>
-                <a class="btn" href="/todos/new">新規登録</a>
+                <a class="btn sub" th:if="${view == 'month'}" th:href="@{/calendar(view='week',date=${from})}" th:text="#{common.viewWeek}">週で見る</a>
+                <a class="btn sub" th:if="${view == 'week'}" th:href="@{/calendar(year=${year},month=${month},view='month')}" th:text="#{common.viewMonth}">月で見る</a>
+                <a class="btn sub" href="/todos" th:text="#{common.tableView}">表で見る</a>
+                <a class="btn" href="/todos/new" th:text="#{common.new}">新規登録</a>
             </div>
         </nav>
 
-        <table class="calendar-table" th:attr="data-from=${from},data-to=${to},data-todo-limit=${view == 'week' ? 0 : 3}">
+        <table class="calendar-table" th:attr="data-from=${from},data-to=${to},data-todo-limit=${view == 'week' ? 0 : 3},data-holiday-error=#{calendar.holidayFetchFailed},data-sunny-label=#{weather.sunny},data-cloudy-label=#{weather.cloudy},data-rainy-label=#{weather.rainy}">
             <thead>
                 <tr>
                     <th class="sunday">日</th>
@@ -72,7 +73,7 @@
             if (holidayRes.headers.get('X-Holidays-Unavailable') === 'true') {
                 const message = document.createElement('p');
                 message.className = 'flash';
-                message.textContent = '祝日を取れませんでした';
+                message.textContent = calendar.dataset.holidayError;
                 document.querySelector('.calendar-page').prepend(message);
             }
 
@@ -99,7 +100,7 @@
                     const weatherMark = document.createElement('span');
                     weatherMark.className = `calendar-weather calendar-weather--${weatherType}`;
                     weatherMark.textContent = weatherType === 'sunny' ? '☀' : (weatherType === 'cloudy' ? '☁' : '☂');
-                    weatherMark.setAttribute('aria-label', weatherType === 'sunny' ? '晴れ' : (weatherType === 'cloudy' ? '曇り' : '雨'));
+                    weatherMark.setAttribute('aria-label', weatherType === 'sunny' ? calendar.dataset.sunnyLabel : (weatherType === 'cloudy' ? calendar.dataset.cloudyLabel : calendar.dataset.rainyLabel));
                     cell.appendChild(weatherMark);
                 }
 

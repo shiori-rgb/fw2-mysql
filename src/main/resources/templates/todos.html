@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container todo-list-page">
-        <h1 class="page-title">やること一覧</h1>
+        <h1 class="page-title" th:text="#{todo.list.title}">やること一覧</h1>
         <nav class="language-switcher"><a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> | <a href="?lang=en" th:text="#{common.languageEnglish}">English</a></nav>
 
         <p class="flash" th:if="${message != null}" th:text="${message}"></p>
