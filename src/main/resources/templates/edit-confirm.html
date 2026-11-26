@@ -9,7 +9,10 @@
 <body>
     <div class="container">
         <h1 class="page-title" th:text="#{todo.edit.confirm}">編集内容の確認</h1>
-        <nav class="language-switcher"><a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> | <a href="?lang=en" th:text="#{common.languageEnglish}">English</a></nav>
+        <nav class="language-switcher">
+            <a class="language-flag language-flag--ja" href="?lang=ja" title="日本語" aria-label="日本語">🇯🇵</a>
+            <a class="language-flag language-flag--en" href="?lang=en" title="English" aria-label="English">🇬🇧</a>
+        </nav>
 
         <p class="confirm-value"><span th:text="#{todo.title}">やること</span>：<span th:text="${#strings.isEmpty(todo.title) ? #messages.msg('common.inputNone') : todo.title}"></span></p>
         <p class="confirm-value"><span th:text="#{todo.detail}">メモ</span>：<span th:text="${#strings.isEmpty(todo.detail) ? #messages.msg('common.inputNone') : todo.detail}"></span></p>

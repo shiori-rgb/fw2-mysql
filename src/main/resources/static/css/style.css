@@ -198,6 +198,13 @@ body {
     margin-bottom: 20px;
 }
 
+.order-links {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    white-space: nowrap;
+}
+
 .form-row {
     margin-bottom: 16px;
 }
@@ -394,6 +401,63 @@ body {
 
 .attachment-delete {
     display: inline;
+}
+
+.language-switcher {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.language-flag {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--theme-border);
+    border-radius: 50%;
+    background: var(--theme-card-bg);
+    overflow: hidden;
+    font-size: 0;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.language-flag::before {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    content: "";
+}
+
+.language-flag--ja::before {
+    background: radial-gradient(circle, #BC002D 0 25%, transparent 26%), #FFFFFF;
+}
+
+.language-flag--en::before {
+    background:
+        linear-gradient(90deg, transparent 42%, #FFFFFF 42% 58%, transparent 58%),
+        linear-gradient(0deg, transparent 42%, #FFFFFF 42% 58%, transparent 58%),
+        linear-gradient(90deg, transparent 47%, #C8102E 47% 53%, transparent 53%),
+        linear-gradient(0deg, transparent 47%, #C8102E 47% 53%, transparent 53%),
+        linear-gradient(45deg, transparent 43%, #FFFFFF 43% 48%, #C8102E 48% 52%, #FFFFFF 52% 57%, transparent 57%),
+        linear-gradient(-45deg, transparent 43%, #FFFFFF 43% 48%, #C8102E 48% 52%, #FFFFFF 52% 57%, transparent 57%),
+        #012169;
+}
+
+.language-flag:hover,
+.language-flag:focus-visible {
+    border-color: var(--theme-main);
+    background: var(--theme-table-header);
+}
+
+.language-flag--pagination {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 0;
 }
 
 .burndown-controls {

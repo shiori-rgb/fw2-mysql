@@ -9,7 +9,10 @@
 <body>
     <div class="container todo-list-page">
         <h1 class="page-title" th:text="#{todo.list.title}">やること一覧</h1>
-        <nav class="language-switcher"><a href="?lang=ja" th:text="#{common.languageJapanese}">日本語</a> | <a href="?lang=en" th:text="#{common.languageEnglish}">English</a></nav>
+        <nav class="language-switcher">
+            <a class="language-flag language-flag--ja" href="?lang=ja" title="日本語" aria-label="日本語">🇯🇵</a>
+            <a class="language-flag language-flag--en" href="?lang=en" title="English" aria-label="English">🇬🇧</a>
+        </nav>
 
         <p class="flash" th:if="${message != null}" th:text="${message}"></p>
 
@@ -32,8 +35,10 @@
                 <span th:text="#{common.showCompleted}">完了したものも表示する</span>
             </label>
             <button class="btn" type="submit" th:text="#{common.filter}">絞り込む</button>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted},page=${page},trash=${trash})}" th:text="#{common.nearestDue}">期限が近い順</a>
-            <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted},page=${page},trash=${trash})}" th:text="#{common.farthestDue}">期限が遠い順</a>
+            <span class="order-links">
+                <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='asc',showCompleted=${showCompleted},page=${page},trash=${trash})}" th:text="#{common.nearestDue}">期限が近い順</a>
+                <a class="link" th:href="@{/todos(keyword=${keyword},category=${category},order='desc',showCompleted=${showCompleted},page=${page},trash=${trash})}" th:text="#{common.farthestDue}">期限が遠い順</a>
+            </span>
         </form>
 
         <script>
@@ -111,10 +116,10 @@
                    th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${pageNumber},trash=${trash})}"
                    th:text="${pageNumber}"></a>
             </span>
-            <a class="btn sub" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='ja')}"
-               th:text="#{common.languageJapanese}">日本語</a>
-            <a class="btn" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='en')}"
-               th:text="#{common.languageEnglish}">English</a>
+            <a class="language-flag language-flag--ja language-flag--pagination" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='ja')}"
+               title="日本語" aria-label="日本語">🇯🇵</a>
+            <a class="language-flag language-flag--en language-flag--pagination" th:href="@{/todos(keyword=${keyword},category=${category},order=${order},showCompleted=${showCompleted},page=${page},trash=${trash},lang='en')}"
+               title="English" aria-label="English">🇬🇧</a>
         </nav>
     </div>
     <script>
