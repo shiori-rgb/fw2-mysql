@@ -46,6 +46,12 @@ body {
     background: #fee2e2;
 }
 
+.todo-priority-mark {
+    margin-left: 4px;
+    color: #d97706;
+    font-weight: bold;
+}
+
 .flash {
     margin: 0 0 16px;
     border: 1px solid #cbd5e1;
