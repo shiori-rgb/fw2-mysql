@@ -10,7 +10,8 @@ import org.apache.ibatis.annotations.Param;
 public interface TodoMapper {
 
     List<Todo> search(@Param("keyword") String keyword, @Param("category") String category,
-            @Param("order") String order, @Param("from") LocalDate from, @Param("to") LocalDate to);
+            @Param("order") String order, @Param("from") LocalDate from, @Param("to") LocalDate to,
+            @Param("showCompleted") boolean showCompleted);
 
     int insert(Todo todo);
 

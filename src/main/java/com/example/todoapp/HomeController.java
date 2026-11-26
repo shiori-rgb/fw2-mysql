@@ -34,14 +34,16 @@ public class HomeController {
             @RequestParam(name = "keyword", defaultValue = "") String keyword,
             @RequestParam(name = "category", defaultValue = "") String category,
             @RequestParam(name = "order", defaultValue = "asc") String order,
+            @RequestParam(name = "showCompleted", defaultValue = "false") boolean showCompleted,
             Model model) {
         String selectedCategory = "すべて".equals(category) ? "" : category;
         String selectedOrder = "desc".equals(order) ? "desc" : "asc";
-        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder);
+        List<Todo> todos = todoService.search(keyword, selectedCategory, selectedOrder, showCompleted);
         model.addAttribute("todos", todos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", selectedCategory);
         model.addAttribute("order", selectedOrder);
+        model.addAttribute("showCompleted", showCompleted);
         return "todos";
     }
 
