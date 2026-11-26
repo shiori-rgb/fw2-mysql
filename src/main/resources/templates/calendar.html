@@ -55,6 +55,15 @@
             const todos = await res.json();
             const holidayRes = await fetch(`/api/holidays?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
             const holidays = await holidayRes.json();
+            let weather = {};
+            try {
+                const weatherRes = await fetch(`/api/weather?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+                if (weatherRes.ok) {
+                    weather = await weatherRes.json();
+                }
+            } catch (error) {
+                weather = {};
+            }
 
             if (holidayRes.headers.get('X-Holidays-Unavailable') === 'true') {
                 const message = document.createElement('p');
@@ -79,6 +88,15 @@
                 if (Object.prototype.hasOwnProperty.call(holidays, date)) {
                     cell.classList.add('calendar-cell--holiday');
                     cell.title = holidays[date];
+                }
+
+                const weatherType = weather[date];
+                if (weatherType) {
+                    const weatherMark = document.createElement('span');
+                    weatherMark.className = `calendar-weather calendar-weather--${weatherType}`;
+                    weatherMark.textContent = weatherType === 'sunny' ? '☀' : (weatherType === 'cloudy' ? '☁' : '☂');
+                    weatherMark.setAttribute('aria-label', weatherType === 'sunny' ? '晴れ' : (weatherType === 'cloudy' ? '曇り' : '雨'));
+                    cell.appendChild(weatherMark);
                 }
 
                 const matchingTodos = todos.filter((todo) => todo.dueDate === date);
